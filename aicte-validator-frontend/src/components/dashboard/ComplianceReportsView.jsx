@@ -11,18 +11,18 @@ import { complianceReportsSummary } from '../../data/seniorOfficerDashboardData'
  * Executive compliance reporting with date & application type filters
  * and functional dynamic CSV export generated from active records.
  */
-const ComplianceReportsView = ({ applications }) => {
+const ComplianceReportsView = ({ applications = [] }) => {
   const [dateFilter, setDateFilter] = useState('ALL');
   const [typeFilter, setTypeFilter] = useState('ALL');
 
   // Filtered applications based on dropdown selections
   const filteredApps = useMemo(() => {
-    return applications.filter((app) => {
+    return (applications || []).filter((app) => {
       const matchesType = typeFilter === 'ALL' || app.applicationType === typeFilter;
       // In this demo, date ranges represent simulated windows
       const matchesDate =
         dateFilter === 'ALL' ||
-        (dateFilter === '7DAYS' && (app.submissionDate.includes('20') || app.submissionDate.includes('19'))) ||
+        (dateFilter === '7DAYS' && ((app.submissionDate || '').includes('20') || (app.submissionDate || '').includes('19'))) ||
         (dateFilter === '30DAYS' && true);
       return matchesType && matchesDate;
     });
@@ -65,15 +65,15 @@ const ComplianceReportsView = ({ applications }) => {
 
     const rows = filteredApps.map((app) => [
       `"${app.id}"`,
-      `"${app.institutionName}"`,
-      `"${app.aisheCode}"`,
-      `"${app.region}"`,
-      `"${app.applicationType}"`,
-      `"${app.stream}"`,
-      `"${app.submissionDate}"`,
+      `"${app.institutionName || app.collegeName || 'Educational Institution'}"`,
+      `"${app.aisheCode || 'N/A'}"`,
+      `"${app.region || 'Central Region'}"`,
+      `"${app.applicationType || 'EoA'}"`,
+      `"${app.stream || 'Engineering & Technology'}"`,
+      `"${app.submissionDate || 'N/A'}"`,
       `"${app.verificationOfficer?.name || 'N/A'}"`,
-      `"${app.preliminaryOutcome}"`,
-      `"${app.currentStatus}"`,
+      `"${app.preliminaryOutcome || 'In Scrutiny Queue'}"`,
+      `"${app.currentStatus || 'Under Review'}"`,
       `"${app.escalationReason || 'None'}"`,
       `"${app.urgency || 'Normal'}"`,
     ]);

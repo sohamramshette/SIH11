@@ -29,16 +29,21 @@ const EscalatedApplicationsView = ({
   const [noteText, setNoteText] = useState('');
 
   // Filter only escalated cases or cases requiring senior attention
-  const escalatedList = applications.filter((app) => {
+  const escalatedList = (applications || []).filter((app) => {
     const isEscalated =
       app.currentStatus === 'Escalated' ||
       app.urgency === 'Critical' ||
       (app.escalationReason && !app.currentStatus.includes('Decision Recorded'));
 
+    const institution = (app.institutionName || app.collegeName || '').toLowerCase();
+    const id = (app.id || '').toLowerCase();
+    const reason = (app.escalationReason || '').toLowerCase();
+    const query = (searchTerm || '').toLowerCase();
+
     const matchesSearch =
-      app.institutionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (app.escalationReason && app.escalationReason.toLowerCase().includes(searchTerm.toLowerCase()));
+      institution.includes(query) ||
+      id.includes(query) ||
+      reason.includes(query);
 
     const matchesCategory =
       categoryFilter === 'ALL' ||
@@ -174,7 +179,7 @@ const EscalatedApplicationsView = ({
               <div>
                 <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center space-x-1.5">
                   <Building2 className="w-4 h-4 text-slate-500" />
-                  <span>{app.institutionName}</span>
+                  <span>{app.institutionName || app.collegeName}</span>
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
                   AISHE: {app.aisheCode} · {app.region} · Proposed Intake: <strong>{app.proposedIntake}</strong>

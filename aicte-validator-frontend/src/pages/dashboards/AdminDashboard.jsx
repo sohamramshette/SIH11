@@ -9,10 +9,11 @@ import RecentActivityFeed from '../../components/dashboard/RecentActivityFeed';
 import ApplicationsTable from '../../components/dashboard/ApplicationsTable';
 import ApplicationDetailsModal from '../../components/dashboard/ApplicationDetailsModal';
 
+import { useDemoState } from '../../hooks/useDemoState';
+
 import {
   sidebarNavItems,
   adminSummaryStats,
-  demoApplications,
   collegesDirectoryData,
   auditLogsData,
 } from '../../data/adminDashboardData';
@@ -33,6 +34,7 @@ import {
  */
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { applications, logoutDemoUser } = useDemoState();
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState('overview');
@@ -46,13 +48,13 @@ const AdminDashboard = () => {
 
   // Logout handler
   const handleLogout = () => {
-    // Clear demo session and navigate back to login page
+    logoutDemoUser();
     navigate('/login');
   };
 
   // Inspect application from ID (used by review alerts panel)
   const handleInspectAppById = (appId) => {
-    const found = demoApplications.find((a) => a.id === appId);
+    const found = applications.find((a) => a.id === appId);
     if (found) {
       setSelectedApp(found);
     }
@@ -136,7 +138,7 @@ const AdminDashboard = () => {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 <div className="lg:col-span-8 space-y-4">
                   <ApplicationsTable
-                    applications={demoApplications}
+                    applications={applications}
                     onSelectApplication={(app) => setSelectedApp(app)}
                   />
                 </div>
@@ -173,7 +175,7 @@ const AdminDashboard = () => {
               </div>
 
               <ApplicationsTable
-                applications={demoApplications}
+                applications={applications}
                 onSelectApplication={(app) => setSelectedApp(app)}
               />
             </div>
@@ -222,7 +224,7 @@ const AdminDashboard = () => {
                   Recent Document Scrutiny Extractions
                 </h3>
                 <div className="divide-y divide-slate-100 text-xs">
-                  {demoApplications.slice(0, 5).map((app) => (
+                  {applications.slice(0, 5).map((app) => (
                     <div key={app.id} className="py-3 flex items-center justify-between">
                       <div>
                         <div className="font-bold text-[#102D52]">{app.id} · {app.collegeName}</div>

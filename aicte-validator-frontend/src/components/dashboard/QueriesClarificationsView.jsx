@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { initialQueriesData } from '../../data/collegeDashboardData';
+import { useDemoState } from '../../hooks/useDemoState';
 import StatusBadge from './StatusBadge';
 import {
   Send,
@@ -10,12 +9,17 @@ import {
 /**
  * QueriesClarificationsView Component
  * Displays queries from AICTE scrutiny officers and allows college representative
- * to enter and submit local responses during the demo session.
+ * to enter and submit responses that update the shared demo state.
  */
 const QueriesClarificationsView = () => {
-  const [queries, setQueries] = useState(initialQueriesData);
+  const { queries, respondToQuery } = useDemoState();
   const [activeResponses, setActiveResponses] = useState({});
   const [successMessage, setSuccessMessage] = useState(null);
+
+  // Filter queries relevant to this college institution
+  const collegeQueries = (queries || []).filter(
+    (q) => !q.collegeName || q.collegeName.includes('Bhartiya') || (q.targetApp || q.applicationId || '').includes('104')
+  );
 
   const handleResponseChange = (queryId, text) => {
     setActiveResponses((prev) => ({ ...prev, [queryId]: text }));
@@ -25,30 +29,9 @@ const QueriesClarificationsView = () => {
     const text = activeResponses[queryId]?.trim();
     if (!text) return;
 
-    const timeString = new Date().toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    setQueries((prev) =>
-      prev.map((q) => {
-        if (q.id === queryId) {
-          return {
-            ...q,
-            status: 'Response Submitted',
-            collegeResponse: text,
-            submittedAt: `${timeString} IST (Simulated)`,
-          };
-        }
-        return q;
-      })
-    );
-
+    respondToQuery(queryId, text);
     setActiveResponses((prev) => ({ ...prev, [queryId]: '' }));
-    setSuccessMessage(`Response to Query ${queryId} has been recorded locally and marked ready for officer scrutiny.`);
+    setSuccessMessage(`Response to Query ${queryId} has been recorded and submitted to the AICTE Scrutiny Cell.`);
     setTimeout(() => setSuccessMessage(null), 5000);
   };
 
@@ -65,7 +48,7 @@ const QueriesClarificationsView = () => {
           </p>
         </div>
         <div className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full self-start sm:self-auto">
-          {queries.filter((q) => q.status === 'Pending College Response').length} Pending Action
+          {collegeQueries.filter((q) => q.status === 'Pending College Response').length} Pending Action
         </div>
       </div>
 
@@ -87,7 +70,7 @@ const QueriesClarificationsView = () => {
 
       {/* Queries List */}
       <div className="space-y-5">
-        {queries.map((q) => {
+        {collegeQueries.map((q) => {
           const isPending = q.status === 'Pending College Response';
           const draftText = activeResponses[q.id] || '';
 

@@ -16,12 +16,18 @@ const DecisionHistoryView = ({ historyRecords = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRecord, setSelectedRecord] = useState(null);
 
-  const filteredHistory = historyRecords.filter((rec) => {
+  const filteredHistory = (historyRecords || []).filter((rec) => {
+    const institution = (rec.institutionName || rec.collegeName || '').toLowerCase();
+    const appId = (rec.applicationId || '').toLowerCase();
+    const recordId = (rec.id || '').toLowerCase();
+    const decisionType = (rec.decisionType || '').toLowerCase();
+    const query = (searchTerm || '').toLowerCase();
+
     return (
-      rec.institutionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rec.applicationId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rec.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rec.decisionType.toLowerCase().includes(searchTerm.toLowerCase())
+      institution.includes(query) ||
+      appId.includes(query) ||
+      recordId.includes(query) ||
+      decisionType.includes(query)
     );
   });
 

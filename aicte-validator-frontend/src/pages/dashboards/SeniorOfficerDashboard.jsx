@@ -12,13 +12,11 @@ import ComplianceReportsView from '../../components/dashboard/ComplianceReportsV
 import DecisionHistoryView from '../../components/dashboard/DecisionHistoryView';
 import AuditTrailView from '../../components/dashboard/AuditTrailView';
 
+import { useDemoState } from '../../hooks/useDemoState';
+
 import {
   seniorSidebarNavItems,
-  demoSeniorOfficerProfile,
   seniorSummaryStats,
-  seniorApplicationsData,
-  seniorDecisionHistoryData,
-  seniorAuditTrailData,
 } from '../../data/seniorOfficerDashboardData';
 
 import {
@@ -42,18 +40,21 @@ import {
  */
 const SeniorOfficerDashboard = () => {
   const navigate = useNavigate();
+  const {
+    applications,
+    decisionHistory: historyList,
+    auditEvents: auditList,
+    updateApplicationNotes,
+    recordSeniorDecision,
+    logoutDemoUser,
+  } = useDemoState();
 
   // Navigation state
   const [activeTab, setActiveTab] = useState('overview');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Applications local state
-  const [applications, setApplications] = useState(seniorApplicationsData);
+  // Selected case
   const [selectedCase, setSelectedCase] = useState(null);
-
-  // Decision History and Audit Trail local state
-  const [historyList, setHistoryList] = useState(seniorDecisionHistoryData);
-  const [auditList, setAuditList] = useState(seniorAuditTrailData);
 
   // Decision Modal state
   const [decisionModalOpen, setDecisionModalOpen] = useState(false);
@@ -80,6 +81,7 @@ const SeniorOfficerDashboard = () => {
 
   // Logout handler
   const handleLogout = () => {
+    logoutDemoUser();
     navigate('/login');
   };
 
@@ -99,106 +101,28 @@ const SeniorOfficerDashboard = () => {
 
   // In-place note update
   const handleUpdateNotes = (appId, notes) => {
-    setApplications((prev) =>
-      prev.map((a) => (a.id === appId ? { ...a, officerNotes: notes } : a))
-    );
+    updateApplicationNotes(appId, notes);
     if (selectedCase && selectedCase.id === appId) {
-      setSelectedCase((prev) => ({ ...prev, officerNotes: notes }));
+      setSelectedCase((prev) => ({ ...prev, officerNotes: notes, reviewNotes: notes }));
     }
     triggerFeedback(`Review notes updated for ${appId}.`, 'info');
   };
 
   // Handle Senior Officer Decision Submission
   const handleConfirmDecision = (appId, decisionPayload) => {
-    const app = applications.find((a) => a.id === appId) || selectedCase;
-    const nowStr = new Date().toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }) + ' IST';
+    recordSeniorDecision(appId, decisionPayload);
 
-    // 1. Update applications list
-    setApplications((prev) =>
-      prev.map((a) => {
-        if (a.id === appId) {
-          const updatedTimeline = [
-            ...(a.timeline || []),
-            {
-              stage: decisionPayload.title,
-              date: nowStr,
-              actor: `${demoSeniorOfficerProfile.name} (${demoSeniorOfficerProfile.officerId})`,
-              details: decisionPayload.rationale || decisionPayload.instructions || decisionPayload.notes || decisionPayload.details,
-            },
-          ];
-
-          return {
-            ...a,
-            currentStatus: decisionPayload.newStatus,
-            statusSeverity: decisionPayload.statusSeverity,
-            timeline: updatedTimeline,
-            officerNotes: decisionPayload.rationale || decisionPayload.instructions || a.officerNotes,
-          };
-        }
-        return a;
-      })
-    );
-
-    // Update selected case if currently open
     if (selectedCase && selectedCase.id === appId) {
       setSelectedCase((prev) => ({
         ...prev,
         currentStatus: decisionPayload.newStatus,
         statusSeverity: decisionPayload.statusSeverity,
         officerNotes: decisionPayload.rationale || decisionPayload.instructions || prev.officerNotes,
-        timeline: [
-          ...(prev.timeline || []),
-          {
-            stage: decisionPayload.title,
-            date: nowStr,
-            actor: `${demoSeniorOfficerProfile.name} (${demoSeniorOfficerProfile.officerId})`,
-            details: decisionPayload.rationale || decisionPayload.instructions || decisionPayload.notes || decisionPayload.details,
-          },
-        ],
       }));
     }
 
-    // 2. Add to Decision History (if recommendation or final decision)
-    if (decisionPayload.actionType === 'final_decision' || decisionPayload.actionType === 'recommendation') {
-      const newHistoryItem = {
-        id: `DEC-2026-${Math.floor(100 + Math.random() * 900)}`,
-        applicationId: app.id,
-        institutionName: app.institutionName,
-        applicationType: app.applicationType,
-        decisionType: decisionPayload.actionType === 'final_decision' ? 'Final Demo Approval' : 'Recommendation Recorded',
-        outcome: decisionPayload.newStatus,
-        outcomeSeverity: decisionPayload.statusSeverity,
-        decisionDate: nowStr,
-        seniorOfficer: demoSeniorOfficerProfile.name,
-        rationale: decisionPayload.rationale || decisionPayload.notes || 'Senior review determination recorded.',
-        notes: decisionPayload.conditions || decisionPayload.targetBoardMeeting || 'Simulated compliance conditions recorded.',
-      };
-      setHistoryList((prev) => [newHistoryItem, ...prev]);
-    }
-
-    // 3. Add to Audit Trail
-    const newAuditEvent = {
-      id: `AUD-${Math.floor(1000 + Math.random() * 9000)}`,
-      timestamp: nowStr,
-      applicationId: app.id,
-      action: decisionPayload.title,
-      actor: `${demoSeniorOfficerProfile.name} (${demoSeniorOfficerProfile.officerId})`,
-      desk: demoSeniorOfficerProfile.office,
-      hash: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '88fe2',
-      details: `${decisionPayload.title} recorded for ${app.institutionName}: ${decisionPayload.newStatus}`,
-    };
-    setAuditList((prev) => [newAuditEvent, ...prev]);
-
-    // 4. Trigger feedback
     triggerFeedback(
-      `Simulated senior action successfully recorded for ${appId}. All records updated in local prototype state.`,
+      `Simulated senior action successfully recorded for ${appId}. Updated in shared prototype state.`,
       'success'
     );
   };
@@ -206,19 +130,27 @@ const SeniorOfficerDashboard = () => {
   // Filtered applications for Approval Review Queue
   const effectiveSearch = headerSearch || searchTerm;
   const filteredQueue = useMemo(() => {
-    return applications.filter((app) => {
-      const matchesSearch =
-        app.id.toLowerCase().includes(effectiveSearch.toLowerCase()) ||
-        app.institutionName.toLowerCase().includes(effectiveSearch.toLowerCase()) ||
-        (app.verificationOfficer?.name && app.verificationOfficer.name.toLowerCase().includes(effectiveSearch.toLowerCase())) ||
-        (app.escalationReason && app.escalationReason.toLowerCase().includes(effectiveSearch.toLowerCase()));
+    return (applications || []).filter((app) => {
+      const id = (app.id || '').toLowerCase();
+      const institution = (app.institutionName || app.collegeName || '').toLowerCase();
+      const officer = (app.verificationOfficer?.name || app.assignedOfficer || '').toLowerCase();
+      const reason = (app.escalationReason || '').toLowerCase();
+      const query = effectiveSearch.toLowerCase().trim();
 
+      const matchesSearch =
+        query === '' ||
+        id.includes(query) ||
+        institution.includes(query) ||
+        officer.includes(query) ||
+        reason.includes(query);
+
+      const status = app.currentStatus || '';
       const matchesStatus =
         statusFilter === 'ALL' ||
-        (statusFilter === 'PENDING' && app.currentStatus.includes('Pending')) ||
-        (statusFilter === 'ESCALATED' && app.currentStatus.includes('Escalated')) ||
-        (statusFilter === 'CLARIFICATION' && app.currentStatus.includes('Clarification')) ||
-        (statusFilter === 'DECIDED' && (app.currentStatus.includes('Decision') || app.currentStatus.includes('Approval') || app.currentStatus.includes('Passed')));
+        (statusFilter === 'PENDING' && (status.includes('Pending') || status.includes('Under Review'))) ||
+        (statusFilter === 'ESCALATED' && (status.includes('Escalated') || status.includes('Inconsistency'))) ||
+        (statusFilter === 'CLARIFICATION' && (status.includes('Clarification') || status.includes('Required'))) ||
+        (statusFilter === 'DECIDED' && (status.includes('Decision') || status.includes('Approved') || status.includes('Passed') || status.includes('Rejected')));
 
       const matchesType = typeFilter === 'ALL' || app.applicationType === typeFilter;
 

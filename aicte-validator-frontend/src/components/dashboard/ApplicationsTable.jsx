@@ -26,21 +26,29 @@ const ApplicationsTable = ({ applications = [], onSelectApplication }) => {
 
   // Filter applications
   const filteredApplications = useMemo(() => {
-    return applications.filter((app) => {
-      const matchesSearch =
-        searchTerm === '' ||
-        app.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.collegeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.aisheCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.assignedOfficer.toLowerCase().includes(searchTerm.toLowerCase());
+    return (applications || []).filter((app) => {
+      const id = (app.id || '').toLowerCase();
+      const college = (app.collegeName || app.institutionName || '').toLowerCase();
+      const aishe = (app.aisheCode || '').toLowerCase();
+      const officer = (app.assignedOfficer || app.verificationOfficer?.name || '').toLowerCase();
+      const query = (searchTerm || '').toLowerCase();
 
+      const matchesSearch =
+        query === '' ||
+        id.includes(query) ||
+        college.includes(query) ||
+        aishe.includes(query) ||
+        officer.includes(query);
+
+      const status = (app.currentStatus || '').toLowerCase();
       const matchesStatus =
         statusFilter === 'ALL' ||
-        app.currentStatus.toLowerCase() === statusFilter.toLowerCase();
+        status === statusFilter.toLowerCase();
 
+      const appType = (app.applicationType || '').toLowerCase();
       const matchesType =
         typeFilter === 'ALL' ||
-        app.applicationType.toLowerCase() === typeFilter.toLowerCase();
+        appType === typeFilter.toLowerCase();
 
       return matchesSearch && matchesStatus && matchesType;
     });
@@ -164,8 +172,8 @@ const ApplicationsTable = ({ applications = [], onSelectApplication }) => {
                     {app.id}
                   </td>
                   <td className="py-3 px-4 font-medium text-slate-900 max-w-xs">
-                    <div className="truncate font-semibold">{app.collegeName}</div>
-                    <div className="text-[10px] text-slate-400 font-mono">AISHE: {app.aisheCode}</div>
+                    <div className="truncate font-semibold">{app.collegeName || app.institutionName}</div>
+                    <div className="text-[10px] text-slate-400 font-mono">AISHE: {app.aisheCode || 'C-00000'}</div>
                   </td>
                   <td className="py-3 px-4 whitespace-nowrap text-slate-600">
                     {app.applicationType}
@@ -177,8 +185,8 @@ const ApplicationsTable = ({ applications = [], onSelectApplication }) => {
                     <StatusBadge status={app.currentStatus} />
                   </td>
                   <td className="py-3 px-4 whitespace-nowrap text-slate-700">
-                    <div className="font-medium">{app.assignedOfficer}</div>
-                    <div className="text-[10px] text-slate-400">{app.officerRole}</div>
+                    <div className="font-medium">{app.assignedOfficer || app.verificationOfficer?.name || 'Unassigned'}</div>
+                    <div className="text-[10px] text-slate-400">{app.officerRole || app.verificationOfficer?.desk || 'Scrutiny Cell'}</div>
                   </td>
                   <td className="py-3 px-4 text-right whitespace-nowrap">
                     <button

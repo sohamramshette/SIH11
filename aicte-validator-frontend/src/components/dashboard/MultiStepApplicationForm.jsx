@@ -150,20 +150,74 @@ const MultiStepApplicationForm = ({ onApplicationCreated, onCancel }) => {
 
     // Generate new local application
     const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const instName = formData.institutionName || demoCollegeProfile.institutionName;
+    const todayStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
     const newApp = {
       id: `APP-2026-ENG-${randomNum}`,
+      collegeName: instName,
+      institutionName: instName,
+      aisheCode: formData.aisheCode || demoCollegeProfile.aisheCode,
+      region: formData.region || demoCollegeProfile.region,
+      state: demoCollegeProfile.state,
       applicationType: formData.applicationType,
-      submissionDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      submissionDate: todayStr,
       currentStatus: 'Under Review',
       statusSeverity: 'info',
+      priority: 'Normal',
+      prioritySeverity: 'info',
       lastUpdated: 'Just now',
-      academicYear: formData.academicYear,
-      assignedOfficer: 'Scrutiny Cell Central (Allocation in Progress)',
+      academicYear: formData.academicYear || '2026-27',
+      assignedOfficer: 'Dr. R. K. Sharma (Scrutiny Officer - Gr. I)',
+      verificationOfficer: {
+        name: 'Dr. R. K. Sharma',
+        id: 'AICTE-SCR-202',
+        desk: 'Central Desk #4',
+      },
+      stream: formData.courseName || formData.applicationCategory || 'Engineering & Technology',
       documentsCount: 12,
       flaggedCount: 0,
+      flaggedDocumentsCount: 0,
+      preliminaryOutcome: 'In Scrutiny Queue',
+      preliminarySeverity: 'info',
       requestedIntake: Number(formData.proposedIntake) || 60,
+      proposedIntake: `${formData.proposedIntake || 60} Seats (${formData.courseName})`,
       summary: `${formData.applicationType} proposal for ${formData.courseName} (Proposed Intake: ${formData.proposedIntake}).`,
       remarks: 'Application submitted successfully. Automated OCR semantic ingestion initialized.',
+      reviewNotes: 'Newly submitted institutional application. OCR semantic parsing initialized.',
+      officerNotes: '',
+      documents: [
+        {
+          id: 'doc-auto-1',
+          title: 'Master Building Plan & Municipal Approval',
+          category: 'Building Infrastructure',
+          status: 'Uploaded',
+          checkStatus: 'Preliminary Check Passed',
+          extractedFields: [
+            { label: 'Built-up Area', value: `${formData.totalBuiltUpAreaSqM || demoCollegeProfile.builtUpAreaSqM} sq.m` },
+            { label: 'Approval Status', value: 'Municipally Endorsed' },
+          ],
+        },
+        {
+          id: 'doc-auto-2',
+          title: 'Land Ownership Title & Contiguity Deed',
+          category: 'Land Documents',
+          status: 'Uploaded',
+          checkStatus: 'Preliminary Check Passed',
+          extractedFields: [
+            { label: 'Plot Area', value: `${formData.totalLandAreaAcres || demoCollegeProfile.landAreaAcres} Acres` },
+            { label: 'Contiguity', value: 'Single Contiguous Plot' },
+          ],
+        },
+      ],
+      timeline: [
+        {
+          stage: 'Application Filed',
+          date: todayStr,
+          actor: `${formData.nodalOfficerName || demoCollegeProfile.nodalOfficer.name} (Authorized Signatory)`,
+          details: `Submitted ${formData.applicationType} proposal for ${formData.proposedIntake || 60} seats.`,
+        },
+      ],
     };
 
     setSubmittedApp(newApp);

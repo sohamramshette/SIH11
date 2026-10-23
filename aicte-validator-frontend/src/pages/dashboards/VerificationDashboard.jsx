@@ -9,13 +9,11 @@ import PreliminaryValidationChecklist from '../../components/dashboard/Prelimina
 import ClarificationQueryModal from '../../components/dashboard/ClarificationQueryModal';
 import EscalationModal from '../../components/dashboard/EscalationModal';
 
+import { useDemoState } from '../../hooks/useDemoState';
+
 import {
   verificationSidebarNavItems,
   verificationSummaryStats,
-  assignedApplicationsData,
-  officerClarificationQueries,
-  officerEscalationsData,
-  officerReviewHistory,
 } from '../../data/verificationDashboardData';
 
 import {
@@ -43,19 +41,25 @@ import {
  */
 const VerificationDashboard = () => {
   const navigate = useNavigate();
+  const {
+    applications,
+    queries: queriesList,
+    escalations: escalationsList,
+    reviewHistory: historyList,
+    updateApplicationNotes,
+    completeOfficerReview,
+    issueClarificationQuery,
+    escalateApplication,
+    logoutDemoUser,
+  } = useDemoState();
 
   // Navigation state
   const [activeTab, setActiveTab] = useState('overview');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Applications demo state
-  const [applications, setApplications] = useState(assignedApplicationsData);
-  const [selectedApp, setSelectedApp] = useState(assignedApplicationsData[0]);
-
-  // Queries, Escalations, and History demo states
-  const [queriesList, setQueriesList] = useState(officerClarificationQueries);
-  const [escalationsList, setEscalationsList] = useState(officerEscalationsData);
-  const [historyList, setHistoryList] = useState(officerReviewHistory);
+  // Selected application in review
+  const [selectedApp, setSelectedApp] = useState(null);
+  const activeSelectedApp = selectedApp || applications[0] || null;
 
   // Modals state
   const [queryModalOpen, setQueryModalOpen] = useState(false);
@@ -82,6 +86,7 @@ const VerificationDashboard = () => {
 
   // Logout handler
   const handleLogout = () => {
+    logoutDemoUser();
     navigate('/login');
   };
 
@@ -94,135 +99,78 @@ const VerificationDashboard = () => {
 
   // Save notes from workspace
   const handleSaveNotes = (appId, notes) => {
-    setApplications((prev) =>
-      prev.map((a) => (a.id === appId ? { ...a, reviewNotes: notes } : a))
-    );
+    updateApplicationNotes(appId, notes);
     if (selectedApp && selectedApp.id === appId) {
-      setSelectedApp((prev) => ({ ...prev, reviewNotes: notes }));
+      setSelectedApp((prev) => ({ ...prev, reviewNotes: notes, officerNotes: notes }));
     }
     triggerFeedback(`Scrutiny notes for ${appId} saved to local session.`);
   };
 
   // Complete review from workspace
   const handleCompleteReview = (appId, outcome, notes) => {
-    const app = applications.find((a) => a.id === appId) || selectedApp;
+    completeOfficerReview(appId, outcome, notes);
     const isPassing = outcome === 'Preliminary Check Passed';
     const nextStatus = isPassing ? 'Scrutiny Passed' : outcome;
-
-    setApplications((prev) =>
-      prev.map((a) =>
-        a.id === appId
-          ? {
-              ...a,
-              currentStatus: nextStatus,
-              statusSeverity: isPassing ? 'success' : 'warning',
-              reviewNotes: notes,
-            }
-          : a
-      )
-    );
 
     if (selectedApp && selectedApp.id === appId) {
       setSelectedApp((prev) => ({
         ...prev,
         currentStatus: nextStatus,
         statusSeverity: isPassing ? 'success' : 'warning',
+        preliminaryOutcome: outcome,
+        preliminarySeverity: isPassing ? 'success' : 'warning',
         reviewNotes: notes,
       }));
     }
 
-    // Add entry to Review History
-    const newHistoryEntry = {
-      id: `REV-${Math.floor(8000 + Math.random() * 1999)}`,
-      applicationId: appId,
-      collegeName: app ? app.collegeName : 'Selected Institution',
-      applicationType: app ? app.applicationType : 'Regulatory Application',
-      outcome,
-      outcomeSeverity: isPassing ? 'success' : 'warning',
-      officerRemarks: notes || `Preliminary scrutiny marked as "${outcome}".`,
-      completedDate: '23 Oct 2026, 17:30 IST (Simulated)',
-    };
-
-    setHistoryList((prev) => [newHistoryEntry, ...prev]);
     triggerFeedback(`Scrutiny review completed for ${appId} with outcome: "${outcome}".`);
   };
 
   // Issue query handler
   const handleOpenQueryModal = (app = null) => {
-    setModalTargetApp(app || selectedApp);
+    setModalTargetApp(app || activeSelectedApp);
     setQueryModalOpen(true);
   };
 
   const handleSubmitQuery = (newQuery) => {
-    setQueriesList((prev) => [newQuery, ...prev]);
-
-    // Update target app status to reflect pending query
-    setApplications((prev) =>
-      prev.map((a) =>
-        a.id === newQuery.applicationId
-          ? { ...a, currentStatus: 'Review Required', statusSeverity: 'warning' }
-          : a
-      )
-    );
-
-    if (selectedApp && selectedApp.id === newQuery.applicationId) {
-      setSelectedApp((prev) => ({
-        ...prev,
-        currentStatus: 'Review Required',
-        statusSeverity: 'warning',
-      }));
-    }
-
-    triggerFeedback(`Query ${newQuery.id} issued to ${newQuery.collegeName}.`);
+    issueClarificationQuery(newQuery);
+    triggerFeedback(`Query ${newQuery.id} issued to ${newQuery.collegeName || 'Institution'}.`);
   };
 
   // Escalation handler
   const handleOpenEscalationModal = (app = null) => {
-    setModalTargetApp(app || selectedApp);
+    setModalTargetApp(app || activeSelectedApp);
     setEscalationModalOpen(true);
   };
 
   const handleSubmitEscalation = (newEscalation) => {
-    setEscalationsList((prev) => [newEscalation, ...prev]);
-
-    // Update target app status to reflect escalation
-    setApplications((prev) =>
-      prev.map((a) =>
-        a.id === newEscalation.applicationId
-          ? { ...a, currentStatus: 'Possible Inconsistency', statusSeverity: 'danger' }
-          : a
-      )
-    );
-
-    if (selectedApp && selectedApp.id === newEscalation.applicationId) {
-      setSelectedApp((prev) => ({
-        ...prev,
-        currentStatus: 'Possible Inconsistency',
-        statusSeverity: 'danger',
-      }));
-    }
-
+    escalateApplication(newEscalation);
     triggerFeedback(`Application ${newEscalation.applicationId} escalated to senior authorities.`);
   };
 
   // Filtered applications for Assigned Applications table
   const filteredApplications = useMemo(() => {
-    return applications.filter((app) => {
+    return (applications || []).filter((app) => {
       const query = (searchTerm || headerSearch).toLowerCase().trim();
+      const id = (app.id || '').toLowerCase();
+      const college = (app.collegeName || app.institutionName || '').toLowerCase();
+      const aishe = (app.aisheCode || '').toLowerCase();
+      const appType = (app.applicationType || '').toLowerCase();
+
       const matchesSearch =
         query === '' ||
-        app.id.toLowerCase().includes(query) ||
-        app.collegeName.toLowerCase().includes(query) ||
-        app.aisheCode.toLowerCase().includes(query) ||
-        app.applicationType.toLowerCase().includes(query);
+        id.includes(query) ||
+        college.includes(query) ||
+        aishe.includes(query) ||
+        appType.includes(query);
 
+      const status = (app.currentStatus || '').toLowerCase();
       const matchesStatus =
-        statusFilter === 'ALL' ||
-        app.currentStatus.toLowerCase() === statusFilter.toLowerCase();
+        statusFilter === 'ALL' || status === statusFilter.toLowerCase();
 
+      const priority = (app.priority || '').toLowerCase();
       const matchesPriority =
-        priorityFilter === 'ALL' ||
-        app.priority.toLowerCase() === priorityFilter.toLowerCase();
+        priorityFilter === 'ALL' || priority === priorityFilter.toLowerCase();
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
@@ -635,14 +583,14 @@ const VerificationDashboard = () => {
           {activeTab === 'workspace' && (
             <div className="animate-fadeIn">
               <DocumentReviewWorkspace
-                key={selectedApp?.id}
+                key={activeSelectedApp?.id}
                 applications={applications}
-                selectedApp={selectedApp}
+                selectedApp={activeSelectedApp}
                 onSelectApp={setSelectedApp}
                 onSaveNotes={handleSaveNotes}
                 onCompleteReview={handleCompleteReview}
-                onOpenClarification={() => handleOpenQueryModal(selectedApp)}
-                onOpenEscalation={() => handleOpenEscalationModal(selectedApp)}
+                onOpenClarification={() => handleOpenQueryModal(activeSelectedApp)}
+                onOpenEscalation={() => handleOpenEscalationModal(activeSelectedApp)}
               />
             </div>
           )}

@@ -10,11 +10,11 @@ import DocumentUploadChecklist from '../../components/dashboard/DocumentUploadCh
 import ValidationResultsView from '../../components/dashboard/ValidationResultsView';
 import QueriesClarificationsView from '../../components/dashboard/QueriesClarificationsView';
 
+import { useDemoState } from '../../hooks/useDemoState';
+
 import {
   collegeSidebarNavItems,
   demoCollegeProfile,
-  collegeSummaryStats,
-  collegeApplications as initialCollegeApps,
   pendingCollegeActions,
   recentCollegeActivity,
 } from '../../data/collegeDashboardData';
@@ -38,13 +38,11 @@ import {
  */
 const CollegeDashboard = () => {
   const navigate = useNavigate();
+  const { applications, createCollegeApplication, logoutDemoUser } = useDemoState();
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState('overview');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
-  // Applications list state (allows newly submitted applications to append locally)
-  const [applications, setApplications] = useState(initialCollegeApps);
 
   // Selected application for modal view
   const [selectedApp, setSelectedApp] = useState(null);
@@ -55,31 +53,92 @@ const CollegeDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  // Filter applications for this specific college
+  const collegeApps = useMemo(() => {
+    return (applications || []).filter(
+      (app) =>
+        app.collegeName === demoCollegeProfile.institutionName ||
+        app.institutionName === demoCollegeProfile.institutionName ||
+        app.aisheCode === demoCollegeProfile.aisheCode ||
+        (app.id && app.id.startsWith('APP-2026-ENG-104')) ||
+        (app.id && app.id.startsWith('APP-2025-ENG')) ||
+        app.id === 'APP-2026-ENG-DRAFT'
+    );
+  }, [applications]);
+
+  // Dynamic summary stats
+  const dynamicSummaryStats = useMemo(() => {
+    const total = collegeApps.length;
+    const drafts = collegeApps.filter((a) => a.currentStatus === 'Draft Mode').length;
+    const underReview = collegeApps.filter((a) => a.currentStatus === 'Under Review').length;
+    const attention = collegeApps.filter(
+      (a) => a.currentStatus === 'Review Required' || a.currentStatus === 'Possible Inconsistency'
+    ).length;
+
+    return [
+      {
+        id: 'stat-total',
+        title: 'Total Applications',
+        value: String(total),
+        subtext: 'Cumulative historical & active submissions',
+        iconName: 'FileText',
+        trend: 'AY 2026-27 Active',
+      },
+      {
+        id: 'stat-draft',
+        title: 'Draft Applications',
+        value: String(drafts),
+        subtext: 'Unsubmitted application in progress',
+        iconName: 'Edit3',
+        trend: 'Incomplete',
+      },
+      {
+        id: 'stat-review',
+        title: 'Applications Under Review',
+        value: String(underReview),
+        subtext: 'Scrutiny committee inspection active',
+        iconName: 'Clock',
+        trend: `${underReview} In Queue`,
+      },
+      {
+        id: 'stat-attention',
+        title: 'Requiring Attention',
+        value: String(attention),
+        subtext: 'Clarification query pending college reply',
+        iconName: 'AlertTriangle',
+        trend: attention > 0 ? 'Action Required' : 'Normal',
+      },
+    ];
+  }, [collegeApps]);
+
   // Logout handler
   const handleLogout = () => {
+    logoutDemoUser();
     navigate('/login');
   };
 
-  // Add newly submitted application from multi-step form
+  // Add newly submitted application from multi-step form to shared store
   const handleApplicationCreated = (newApp) => {
-    setApplications((prev) => [newApp, ...prev]);
+    createCollegeApplication(newApp);
   };
 
   // Filter applications for "My Applications" tab
   const filteredApplications = useMemo(() => {
-    return applications.filter((app) => {
-      const matchesSearch =
-        searchTerm === '' ||
-        app.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.applicationType.toLowerCase().includes(searchTerm.toLowerCase());
+    return collegeApps.filter((app) => {
+      const id = (app.id || '').toLowerCase();
+      const appType = (app.applicationType || '').toLowerCase();
+      const query = (searchTerm || '').toLowerCase();
 
+      const matchesSearch =
+        query === '' || id.includes(query) || appType.includes(query);
+
+      const status = (app.currentStatus || '').toLowerCase();
       const matchesStatus =
-        statusFilter === 'ALL' ||
-        app.currentStatus.toLowerCase() === statusFilter.toLowerCase();
+        statusFilter === 'ALL' || status === statusFilter.toLowerCase();
 
       return matchesSearch && matchesStatus;
     });
-  }, [applications, searchTerm, statusFilter]);
+  }, [collegeApps, searchTerm, statusFilter]);
 
   const totalPages = Math.ceil(filteredApplications.length / itemsPerPage) || 1;
   const currentItems = useMemo(() => {
@@ -140,7 +199,7 @@ const CollegeDashboard = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                  {collegeSummaryStats.map((stat) => (
+                  {dynamicSummaryStats.map((stat) => (
                     <StatCard
                       key={stat.id}
                       title={stat.title}

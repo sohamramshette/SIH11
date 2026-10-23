@@ -3,96 +3,83 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   ShieldCheck,
-  Eye,
-  EyeOff,
+  Building2,
+  FileCheck2,
+  Award,
+  ArrowRight,
   LogIn,
-  AlertCircle,
-  HelpCircle,
-  X,
-  Lock,
-  User,
   Info,
 } from 'lucide-react';
-import DemoRoleSelector from '../components/auth/DemoRoleSelector';
 import LoginSupportingPanel from '../components/auth/LoginSupportingPanel';
-import { DEMO_ROLES, validateLoginForm, mockLogin } from '../services/mockAuth';
+import { DEMO_ROLES } from '../services/mockAuth';
+import { useDemoState } from '../hooks/useDemoState';
 
 /**
- * LoginPage Component (Phase 2)
- * Formal Indian Government Portal Login Interface.
- * Implements clean form validation, password visibility toggle,
- * isolated mock authentication service, and development demo-role routing.
+ * LoginPage Component
+ * Direct 4-Role Demo Gateway for SIH 26261.
+ * Provides instant 1-click access buttons for the 4 stakeholder roles
+ * with no email ID or password input required.
  */
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { loginDemoUser } = useDemoState();
+  const [loggingInRoleId, setLoggingInRoleId] = useState(null);
 
-  // Selected demo role (defaults to System Admin for convenient testing)
-  const [selectedRole, setSelectedRole] = useState(DEMO_ROLES[0].id);
+  // Direct 1-click role login handler
+  const handleRoleLogin = (role) => {
+    setLoggingInRoleId(role.id);
 
-  // Form inputs (prefilled with default demo credentials for immediate testing)
-  const [identifier, setIdentifier] = useState(DEMO_ROLES[0].email);
-  const [password, setPassword] = useState('demo@aicte2026');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+    const userPayload = {
+      id: role.defaultUserId,
+      email: role.email,
+      role: role.id,
+      roleName: role.roleName,
+      badge: role.badge,
+    };
 
-  // State management
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+    // Set demo user session in shared context
+    loginDemoUser(userPayload);
 
-  // Handle demo role selection
-  const handleSelectRole = (role) => {
-    setSelectedRole(role.id);
-    setIdentifier(role.email);
-    setPassword('demo@aicte2026');
-    setErrors({});
+    // Fast, responsive redirect to the role's dashboard
+    setTimeout(() => {
+      navigate(role.targetRoute);
+    }, 180);
   };
 
-  // Handle input changes with real-time error clearing
-  const handleIdentifierChange = (e) => {
-    setIdentifier(e.target.value);
-    if (errors.identifier) {
-      setErrors((prev) => ({ ...prev, identifier: undefined, general: undefined }));
-    }
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-    if (errors.password) {
-      setErrors((prev) => ({ ...prev, password: undefined, general: undefined }));
-    }
-  };
-
-  // Form submission & mock authentication
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // 1. Frontend validation
-    const { isValid, errors: validationErrors } = validateLoginForm(identifier, password);
-    if (!isValid) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setErrors({});
-    setIsLoading(true);
-
-    try {
-      // 2. Isolated mock authentication service call
-      const result = await mockLogin({
-        identifier,
-        password,
-        roleId: selectedRole,
-      });
-
-      // 3. Navigate to role-specific dashboard placeholder
-      navigate(result.targetRoute);
-    } catch (err) {
-      setErrors({
-        general: err.message || 'Authentication failed. Please check your credentials.',
-      });
-      setIsLoading(false);
-    }
+  // Role visual configuration map
+  const roleVisuals = {
+    admin: {
+      icon: ShieldCheck,
+      iconBg: 'bg-[#102D52] text-amber-300',
+      borderHover: 'hover:border-[#102D52]',
+      btnBg: 'bg-[#102D52] hover:bg-[#1D4ED8]',
+      badgeColor: 'bg-blue-100 text-blue-900 border-blue-200',
+      tag: 'System Administration & Rules',
+    },
+    college: {
+      icon: Building2,
+      iconBg: 'bg-emerald-700 text-white',
+      borderHover: 'hover:border-emerald-600',
+      btnBg: 'bg-emerald-700 hover:bg-emerald-800',
+      badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-200',
+      tag: 'Institutional Portal',
+    },
+    verification: {
+      icon: FileCheck2,
+      iconBg: 'bg-indigo-700 text-white',
+      borderHover: 'hover:border-indigo-600',
+      btnBg: 'bg-indigo-700 hover:bg-indigo-800',
+      badgeColor: 'bg-indigo-100 text-indigo-900 border-indigo-200',
+      tag: 'Scrutiny Committee Desk',
+    },
+    'senior-officer': {
+      icon: Award,
+      iconBg: 'bg-purple-800 text-amber-300',
+      borderHover: 'hover:border-purple-600',
+      btnBg: 'bg-purple-800 hover:bg-purple-900',
+      badgeColor: 'bg-purple-100 text-purple-900 border-purple-200',
+      tag: 'Regional Directorate',
+    },
   };
 
   return (
@@ -121,12 +108,12 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Main Login View Container */}
+      {/* Main View Container */}
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Login Card */}
+          {/* Left Column: 4 Demo Login Buttons Card */}
           <div className="lg:col-span-7 flex justify-center">
-            <div className="w-full max-w-xl bg-white rounded-2xl border border-slate-200 shadow-md p-6 sm:p-8">
+            <div className="w-full max-w-2xl bg-white rounded-2xl border border-slate-200 shadow-md p-6 sm:p-8">
               {/* Institutional Card Header */}
               <div className="flex items-start justify-between pb-5 mb-5 border-b border-slate-100">
                 <div className="flex items-center space-x-3">
@@ -143,191 +130,121 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-900 border border-blue-200">
-                  OFFICIAL ACCESS
+                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-950 border border-amber-300">
+                  DEMO PORTAL
                 </span>
               </div>
 
-              {/* Title & Supporting Text */}
-              <div className="mb-6">
-                <h1 className="text-2xl font-black text-[#102D52] tracking-tight mb-1">
-                  Sign In to Your Account
+              {/* Title & Instructions */}
+              <div className="mb-5">
+                <h1 className="text-2xl font-black text-[#102D52] tracking-tight mb-1.5">
+                  Select Your Portal Role
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                  Access the application validation and regulatory compliance portal.
+                  Click any of the 4 institutional roles below for instant 1-click access. No email ID or password is required.
                 </p>
               </div>
 
-              {/* General Error Banner */}
-              {errors.general && (
-                <div className="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-800 flex items-start space-x-2.5">
-                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold">Authentication Notice: </span>
-                    <span>{errors.general}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Development-Only Demo Role Selector */}
-              <DemoRoleSelector
-                selectedRole={selectedRole}
-                onSelectRole={handleSelectRole}
-              />
-
-              {/* Visible Demo Mode Notice */}
-              <div className="mb-5 p-3 rounded-md bg-blue-50/80 border border-blue-200 text-[11px] text-blue-950 flex items-start space-x-2">
+              {/* Notice Banner */}
+              <div className="mb-6 p-3 rounded-lg bg-blue-50/80 border border-blue-200 text-xs text-blue-950 flex items-start space-x-2.5">
                 <Info className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
                 <div className="leading-snug">
-                  <span className="font-bold">Demo mode — no real authentication is performed. </span>
+                  <span className="font-bold">Instant Demonstration Login: </span>
                   <span>
-                    Selecting a role automatically populates simulated credentials. Submitting will navigate to the role's dashboard.
+                    Direct access is enabled for all 4 stakeholder roles. Selecting any role will automatically initialize the session and open the role's workspace.
                   </span>
                 </div>
               </div>
 
-              {/* Login Form */}
-              <form onSubmit={handleSubmit} noValidate className="space-y-4">
-                {/* Field 1: Email or User ID */}
-                <div>
-                  <label
-                    htmlFor="identifier"
-                    className="block text-xs font-bold text-slate-800 mb-1.5"
-                  >
-                    Email Address or User ID <span className="text-red-600">*</span>
-                  </label>
-                  <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-                    <input
-                      id="identifier"
-                      name="identifier"
-                      type="text"
-                      autoComplete="username"
-                      value={identifier}
-                      onChange={handleIdentifierChange}
-                      disabled={isLoading}
-                      aria-invalid={errors.identifier ? 'true' : 'false'}
-                      aria-describedby={errors.identifier ? 'identifier-error' : undefined}
-                      placeholder="e.g. officer@aicte.gov.in or AICTE-ADM-001"
-                      className={`w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm rounded-lg border bg-white focus:outline-none focus:ring-2 transition-colors ${
-                        errors.identifier
-                          ? 'border-red-500 focus:ring-red-400 text-red-900 bg-red-50/30'
-                          : 'border-slate-300 focus:ring-[#102D52] focus:border-[#102D52] text-slate-900'
+              {/* 4 Dedicated Demo Login Cards / Buttons */}
+              <div className="space-y-3.5">
+                {DEMO_ROLES.map((role) => {
+                  const visuals = roleVisuals[role.id] || roleVisuals.admin;
+                  const Icon = visuals.icon;
+                  const isPending = loggingInRoleId === role.id;
+
+                  return (
+                    <div
+                      key={role.id}
+                      className={`group relative rounded-xl border-2 border-slate-200 bg-white p-4 transition-all duration-200 shadow-xs hover:shadow-md ${visuals.borderHover} ${
+                        isPending ? 'ring-2 ring-[#102D52] bg-slate-50' : ''
                       }`}
-                    />
-                  </div>
-                  {errors.identifier && (
-                    <p id="identifier-error" className="mt-1.5 text-xs text-red-600 font-medium flex items-center gap-1">
-                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                      <span>{errors.identifier}</span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Field 2: Password with Show/Hide Toggle */}
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label
-                      htmlFor="password"
-                      className="block text-xs font-bold text-slate-800"
                     >
-                      Password <span className="text-red-600">*</span>
-                    </label>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        {/* Role Details */}
+                        <div className="flex items-start space-x-3.5">
+                          <div
+                            className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-xs ${visuals.iconBg}`}
+                          >
+                            <Icon className="w-5 h-5" />
+                          </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setForgotPasswordOpen(true)}
-                      className="text-xs font-bold text-[#1D4ED8] hover:text-[#102D52] transition-colors focus:outline-none"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <h2 className="text-sm font-bold text-slate-900 group-hover:text-[#102D52] transition-colors">
+                                {role.roleName}
+                              </h2>
+                              <span
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${visuals.badgeColor}`}
+                              >
+                                {role.badge}
+                              </span>
+                            </div>
 
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-                    <input
-                      id="password"
-                      name="password"
-                      type={showPassword ? 'text' : 'password'}
-                      autoComplete="current-password"
-                      value={password}
-                      onChange={handlePasswordChange}
-                      disabled={isLoading}
-                      aria-invalid={errors.password ? 'true' : 'false'}
-                      aria-describedby={errors.password ? 'password-error' : undefined}
-                      placeholder="Enter your security password"
-                      className={`w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-lg border bg-white focus:outline-none focus:ring-2 transition-colors ${
-                        errors.password
-                          ? 'border-red-500 focus:ring-red-400 text-red-900 bg-red-50/30'
-                          : 'border-slate-300 focus:ring-[#102D52] focus:border-[#102D52] text-slate-900'
-                      }`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      disabled={isLoading}
-                      className="absolute right-3 top-2.5 p-0.5 text-slate-500 hover:text-slate-800 focus:outline-none"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
+                            <p className="text-xs text-slate-500 leading-relaxed mb-1.5 max-w-md">
+                              {role.description}
+                            </p>
 
-                  {errors.password && (
-                    <p id="password-error" className="mt-1.5 text-xs text-red-600 font-medium flex items-center gap-1">
-                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                      <span>{errors.password}</span>
-                    </p>
-                  )}
-                </div>
+                            <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
+                              <span className="font-mono text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
+                                ID: {role.defaultUserId}
+                              </span>
+                              <span>·</span>
+                              <span className="font-mono text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded">
+                                Target: {role.targetRoute}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
 
-                {/* Remember Me Checkbox */}
-                <div className="flex items-center justify-between pt-1">
-                  <label className="flex items-center space-x-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      id="rememberMe"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      disabled={isLoading}
-                      className="w-4 h-4 rounded border-slate-300 text-[#102D52] focus:ring-[#102D52]"
-                    />
-                    <span className="text-xs text-slate-700 font-medium">
-                      Remember me on this institutional device
-                    </span>
-                  </label>
-                </div>
+                        {/* Direct Login Action Button */}
+                        <div className="sm:shrink-0 pt-2 sm:pt-0">
+                          <button
+                            type="button"
+                            onClick={() => handleRoleLogin(role)}
+                            disabled={loggingInRoleId !== null}
+                            className={`w-full sm:w-auto inline-flex items-center justify-center space-x-2 py-2.5 px-4 text-xs font-bold text-white rounded-lg shadow-xs transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                              visuals.btnBg
+                            } ${
+                              loggingInRoleId !== null && !isPending
+                                ? 'opacity-50 cursor-not-allowed'
+                                : 'hover:scale-[1.02] active:scale-[0.98]'
+                            }`}
+                          >
+                            {isPending ? (
+                              <>
+                                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                <span>Opening Portal...</span>
+                              </>
+                            ) : (
+                              <>
+                                <LogIn className="w-3.5 h-3.5" />
+                                <span>Log In as {role.roleName}</span>
+                                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-                {/* Submit Primary Button */}
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 text-sm font-bold text-white rounded-lg bg-[#102D52] hover:bg-[#1D4ED8] shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#102D52] disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Verifying Credentials &amp; Redirecting...</span>
-                      </>
-                    ) : (
-                      <>
-                        <LogIn className="w-4 h-4" />
-                        <span>Sign In to Portal</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-
-              {/* Small Prototype Notice */}
+              {/* Bottom Prototype Notice */}
               <div className="mt-6 pt-4 border-t border-slate-100 text-center">
                 <p className="text-[11px] text-slate-500 leading-relaxed">
-                  <strong>Notice:</strong> This is a Smart India Hackathon student prototype (Problem Statement ID: 26261). Authentication is currently simulated for user interface and navigation evaluation.
+                  <strong>Notice:</strong> This is a Smart India Hackathon student prototype (Problem Statement ID: 26261). Authentication is simulated with pre-configured demo roles for immediate review and testing.
                 </p>
               </div>
             </div>
@@ -339,57 +256,6 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Forgot Password Informational Modal */}
-      {forgotPasswordOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="forgot-password-title"
-        >
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl max-w-md w-full p-6 text-slate-800 animate-fadeIn">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
-              <div className="flex items-center space-x-2 text-[#102D52]">
-                <HelpCircle className="w-5 h-5 text-blue-700" />
-                <h2 id="forgot-password-title" className="text-base font-bold">
-                  Password Recovery Information
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setForgotPasswordOpen(false)}
-                className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100"
-                aria-label="Close dialog"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
-              <p>
-                In the production environment, password recovery will be managed through institutional OTP verification sent to the authorized nodal officer's registered government email address.
-              </p>
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 text-xs text-blue-900 font-medium">
-                <strong>Prototype Notice:</strong> Password recovery will be connected when backend authentication services and official SMS/Email gateways are integrated in Phase 3.
-              </div>
-              <p className="text-xs text-slate-500">
-                For this prototype session, please use the development role selector on the login card to test any of the four role-based dashboard routes without needing a password reset.
-              </p>
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setForgotPasswordOpen(false)}
-                className="px-4 py-2 text-xs font-bold rounded-lg bg-[#102D52] text-white hover:bg-[#1D4ED8] transition-colors"
-              >
-                Acknowledge &amp; Return
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
