@@ -68,9 +68,9 @@ const FeatureCard = ({
         )}
       </div>
 
-      {/* Footer: Handbook Reference & Action Link */}
+      {/* Footer: Module Status & Action Link */}
       <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-        <span className="font-mono text-[10px] text-slate-500 font-medium">
+        <span className="text-[10px] font-semibold text-slate-500 px-2 py-0.5 rounded bg-slate-50 border border-slate-200">
           {referenceNorm}
         </span>
         <a

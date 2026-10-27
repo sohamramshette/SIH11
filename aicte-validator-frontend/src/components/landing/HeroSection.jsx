@@ -55,12 +55,18 @@ const HeroSection = () => {
       <div className="absolute top-1/2 -left-24 w-80 h-80 rounded-full bg-amber-50/40 pointer-events-none blur-3xl -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Institutional Badge */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#102D52] text-xs font-bold tracking-wide shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-[#1D4ED8] animate-ping" />
-            <span className="uppercase text-[11px] tracking-wider text-blue-900">
-              Regulatory Compliance & Verification Protocol 2026-27
+        {/* Top Eyebrow Badge & Prototype Disclaimer Label */}
+        <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#102D52] text-xs font-bold tracking-wide shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-[#1D4ED8]" />
+            <span className="uppercase text-[11px] font-black tracking-wider text-[#102D52]">
+              SMART INDIA HACKATHON · PS 26261
+            </span>
+          </div>
+
+          <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold shadow-xs">
+            <span className="text-[11px] font-semibold text-amber-900">
+              Student Prototype · Not an Official AICTE Portal
             </span>
           </div>
         </div>
@@ -71,12 +77,11 @@ const HeroSection = () => {
           <div className="lg:col-span-7 text-center lg:text-left">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#102D52] tracking-tight leading-[1.15] mb-5">
               AI-Powered Application Validation &amp;{' '}
-              <span className="text-[#E05A18] block sm:inline">Regulatory Compliance</span>
+              <span className="text-[#E05A18] block sm:inline">Document Verification</span>
             </h1>
 
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-8 font-normal">
-              Validate institutional applications, identify document inconsistencies and support
-              transparent, evidence-based regulatory review.
+              Help streamline institutional application scrutiny by identifying missing documents, inconsistent information, and potential compliance issues for authorized officers to review.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 mb-8">
@@ -84,7 +89,7 @@ const HeroSection = () => {
                 to="/login"
                 className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 text-sm font-bold rounded-lg bg-[#102D52] text-white hover:bg-[#1D4ED8] shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#102D52]"
               >
-                <span>Access Portal</span>
+                <span>Login to Portal</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
@@ -96,19 +101,19 @@ const HeroSection = () => {
               </a>
             </div>
 
-            {/* Institutional Framework Checklist */}
+            {/* Verification Framework Checklist */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left pt-4 border-t border-slate-200 text-xs text-slate-700">
               <div className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                <span className="font-medium">AICTE Handbook Compliant</span>
+                <span className="font-medium">Document Checks</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                <span className="font-medium">Tamper-Proof Audit Trail</span>
+                <span className="font-medium">Verifiable Audit Trail</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                <span className="font-medium">Authorized Officer Sign-off</span>
+                <span className="font-medium">Officer Review Workflow</span>
               </div>
             </div>
           </div>
@@ -122,7 +127,7 @@ const HeroSection = () => {
                   <Building2 className="w-5 h-5 text-amber-400" />
                   <div>
                     <div className="text-[10px] uppercase font-bold tracking-wider text-blue-200">
-                      Compliance Inspection Dossier
+                      Sample Application Dossier
                     </div>
                     <div className="text-xs font-extrabold text-white">
                       APP-2026-ENG-4912 · DEMO CASE
@@ -130,14 +135,14 @@ const HeroSection = () => {
                   </div>
                 </div>
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400 text-slate-950">
-                  UNDER AUDIT
+                  DEMO REVIEW
                 </span>
               </div>
 
               {/* Dossier Subheader / Institution Meta */}
               <div className="bg-slate-50 px-5 py-2.5 border-b border-slate-200 text-xs flex justify-between items-center text-slate-600">
                 <div>
-                  <span className="font-semibold text-slate-800">Institute:</span> National Institute of Tech &amp; Science
+                  <span className="font-semibold text-slate-800">Institute:</span> Sample Technical Institute (Mock)
                 </div>
                 <div className="font-mono text-[10px] text-slate-500">
                   AISHE: C-48291
@@ -149,7 +154,7 @@ const HeroSection = () => {
                 {/* Item 1: Land Title */}
                 <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
                   <div className="flex items-center space-x-2.5">
-                    <div className="p-1.5 bg-emerald-100 text-emerald-800 rounded">
+                    <div className="p-1.5 bg-blue-100 text-blue-800 rounded">
                       <FileCheck className="w-4 h-4" />
                     </div>
                     <div>
@@ -157,15 +162,15 @@ const HeroSection = () => {
                       <div className="text-[10px] text-slate-500">7.5 Acres · Encumbrance-Free Certificate</div>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                    PASS 99.8%
+                  <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                    Demo Result
                   </span>
                 </div>
 
                 {/* Item 2: Built-Up Space */}
                 <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
                   <div className="flex items-center space-x-2.5">
-                    <div className="p-1.5 bg-emerald-100 text-emerald-800 rounded">
+                    <div className="p-1.5 bg-blue-100 text-blue-800 rounded">
                       <FileText className="w-4 h-4" />
                     </div>
                     <div>
@@ -174,7 +179,7 @@ const HeroSection = () => {
                     </div>
                   </div>
                   <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                    COMPLIANT
+                    Pending Verification
                   </span>
                 </div>
 
@@ -186,11 +191,11 @@ const HeroSection = () => {
                     </div>
                     <div>
                       <div className="text-xs font-bold text-slate-800">Faculty Cadre Ratio (SFR 1:15)</div>
-                      <div className="text-[10px] text-amber-700 font-medium">1 Duplicate Aadhaar Flag in Sister College</div>
+                      <div className="text-[10px] text-amber-700 font-medium">Potential duplicate entry flagged for review</div>
                     </div>
                   </div>
                   <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                    FLAGGED
+                    Potential Mismatch
                   </span>
                 </div>
 
@@ -202,11 +207,11 @@ const HeroSection = () => {
                     </div>
                     <div>
                       <div className="text-xs font-bold text-slate-800">Anti-Ragging &amp; Non-Capitation Deed</div>
-                      <div className="text-[10px] text-slate-500">Notarized Stamp Valid · Digital Hash Sealed</div>
+                      <div className="text-[10px] text-slate-500">Sample Upload · Awaiting Officer Verification</div>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                    AUTHENTIC
+                  <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-300">
+                    Review Required
                   </span>
                 </div>
               </div>
@@ -219,7 +224,7 @@ const HeroSection = () => {
                 </div>
                 {/* Circular Formal Stamp */}
                 <div className="border border-dashed border-[#102D52] rounded px-2 py-0.5 text-[9px] font-mono font-bold text-[#102D52] uppercase tracking-wider bg-white">
-                  SEAL: AUDIT-OK
+                  DEMO: PENDING VERIFICATION
                 </div>
               </div>
             </div>
@@ -232,11 +237,11 @@ const HeroSection = () => {
             <div className="flex items-center space-x-2">
               <Search className="w-4 h-4 text-[#102D52]" />
               <h2 className="text-sm sm:text-base font-bold text-[#102D52]">
-                Instant Application Status &amp; Regulatory Tracking
+                Application Status &amp; Verification Tracking
               </h2>
             </div>
             <span className="text-[11px] font-medium text-slate-500">
-              Enter application credentials to view preliminary automated verification status
+              Enter sample application credentials to view preliminary verification status in demo queue
             </span>
           </div>
 

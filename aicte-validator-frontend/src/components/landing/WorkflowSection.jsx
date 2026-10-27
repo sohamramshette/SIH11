@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { workflowSteps } from '../../data/landingPageData';
 import {
   GitMerge,
-  ArrowRight,
   CheckCircle2,
   FileCheck,
   ShieldAlert,
@@ -32,17 +30,15 @@ const WorkflowSection = () => {
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-100 text-[#102D52] text-xs font-bold uppercase tracking-wider mb-3 border border-blue-200">
             <GitMerge className="w-3.5 h-3.5 text-[#1D4ED8]" />
-            <span>End-to-End Scrutiny Pipeline</span>
+            <span>Four-Stage Review Process</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#102D52] tracking-tight leading-tight mb-4">
-            From Institutional Submission to{' '}
-            <span className="text-[#E05A18]">Statutory Decision</span>
+            End-to-End Scrutiny Pipeline
           </h2>
 
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-            Four sequential stages ensuring automated evidence discovery, scrutiny officer oversight,
-            and legally compliant regulatory decisions.
+            Four sequential stages from initial submission to final regulatory decision.
           </p>
 
           {/* Pipeline Milestone Status Strip (Inspired directly by Reference Screenshot 3) */}
@@ -161,20 +157,6 @@ const WorkflowSection = () => {
                 );
               })}
             </div>
-          </div>
-        </div>
-
-        {/* Stage Callout & Action */}
-        <div className="text-center">
-          <Link
-            to="/login"
-            className="inline-flex items-center space-x-2 px-8 py-3.5 text-sm font-bold text-white rounded-lg bg-[#E05A18] hover:bg-[#C2410C] shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E05A18]"
-          >
-            <span>Access Institutional Scrutiny Portal</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <div className="mt-2 text-xs text-slate-500">
-            Designated for AICTE Scrutiny Officers, Verification Teams, and Registered Institutions
           </div>
         </div>
       </div>

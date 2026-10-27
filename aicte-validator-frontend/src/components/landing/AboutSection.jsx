@@ -27,23 +27,23 @@ const AboutSection = () => {
             </p>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6 font-normal">
-              The <strong>AICTE Application Validation, Document Authentication and Regulatory Compliance Verification System</strong> is a student-engineered prototype designed to assist official scrutiny committees with deterministic handbook evaluations, coordinate-level evidence citations, and tamper-detection safeguards.
+              The <strong>AICTE Application Validation, Document Authentication and Regulatory Compliance Verification System</strong> is a student-engineered prototype designed to assist official scrutiny committees with deterministic handbook evaluations, coordinate-level evidence citations, and discrepancy detection safeguards.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs text-slate-700">
               <div className="flex items-start space-x-2.5">
                 <CheckCircle className="w-4 h-4 text-[#059669] shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-[#102D52] block">APH 2026-27 Alignment</span>
-                  <span>Evaluates norms strictly against the official AICTE handbook specifications.</span>
+                  <span className="font-bold text-[#102D52] block">APH Framework Alignment</span>
+                  <span>Evaluates norms strictly against official AICTE handbook specifications.</span>
                 </div>
               </div>
 
               <div className="flex items-start space-x-2.5">
                 <CheckCircle className="w-4 h-4 text-[#059669] shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-[#102D52] block">Anti-Ghost Faculty Checks</span>
-                  <span>Cross-institution credential matching to eliminate duplicated staff listings.</span>
+                  <span className="font-bold text-[#102D52] block">Faculty Duplication Checks</span>
+                  <span>Cross-application credential checks to identify potential duplicate staff listings.</span>
                 </div>
               </div>
             </div>

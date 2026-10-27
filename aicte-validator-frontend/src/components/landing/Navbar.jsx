@@ -5,30 +5,23 @@ import {
   Menu,
   X,
   ShieldCheck,
-  ChevronRight,
-  ExternalLink,
-  Radio,
   FileSearch,
 } from 'lucide-react';
-import { tickerAnnouncements } from '../../data/landingPageData';
 
 /**
  * Main Navigation
  * Reproduces the institutional header hierarchy from the reference AICTE portal.
  * Features institutional branding, dual-language council identifier,
- * responsive mobile navigation, and live notification ticker.
+ * and responsive mobile navigation.
  */
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTickerIndex] = useState(0);
 
   const navLinks = [
     { name: 'Home', href: '#' },
-    { name: 'About', href: '#about' },
     { name: 'Features', href: '#features' },
     { name: 'Workflow', href: '#workflow' },
     { name: 'Trust & Safeguards', href: '#safeguards' },
-    { name: 'Contact', href: '#contact' },
   ];
 
   return (
@@ -85,7 +78,7 @@ const Navbar = () => {
               className="inline-flex items-center space-x-1.5 px-4 py-2 text-xs font-bold rounded-md bg-[#102D52] text-white hover:bg-[#1D4ED8] shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#102D52]"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Login</span>
+              <span>Login to Portal</span>
             </Link>
           </div>
 
@@ -95,7 +88,7 @@ const Navbar = () => {
               to="/login"
               className="sm:hidden inline-flex items-center px-3 py-1.5 text-xs font-bold rounded bg-[#102D52] text-white hover:bg-[#1D4ED8]"
             >
-              Login
+              Login to Portal
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -105,43 +98,6 @@ const Navbar = () => {
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Live Notification Strip (Directly reproducing the reference portal's LIVE announcements banner) */}
-      <div className="bg-[#FFF9F5] border-t border-b border-orange-200/80 px-4 py-1.5 text-xs">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center space-x-2.5 overflow-hidden">
-            <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#E05A18] text-white tracking-wider uppercase shrink-0 shadow-xs">
-              <Radio className="w-2.5 h-2.5 animate-pulse" />
-              <span>LIVE</span>
-            </span>
-
-            <div className="flex items-center space-x-2 text-slate-800 truncate">
-              <span className="text-[10px] font-bold text-[#E05A18] uppercase tracking-wide">
-                [{tickerAnnouncements[activeTickerIndex].tag}]
-              </span>
-              <a
-                href={tickerAnnouncements[activeTickerIndex].link}
-                className="truncate hover:text-[#1D4ED8] hover:underline font-medium flex items-center gap-1 text-slate-700"
-              >
-                <span>{tickerAnnouncements[activeTickerIndex].text}</span>
-                <ChevronRight className="w-3.5 h-3.5 shrink-0 inline text-[#E05A18]" />
-              </a>
-            </div>
-          </div>
-
-          <div className="hidden md:flex items-center space-x-4 text-[11px] text-slate-600">
-            <a href="#workflow" className="hover:text-[#102D52] font-semibold flex items-center gap-1">
-              <span>Scrutiny Workflow Matrix</span>
-              <ExternalLink className="w-3 h-3 text-slate-400" />
-            </a>
-            <span>|</span>
-            <a href="#safeguards" className="hover:text-[#102D52] font-semibold flex items-center gap-1">
-              <span>Verification Safeguards</span>
-              <ExternalLink className="w-3 h-3 text-slate-400" />
-            </a>
           </div>
         </div>
       </div>
@@ -177,7 +133,7 @@ const Navbar = () => {
               className="w-full inline-flex items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold rounded-md bg-[#102D52] text-white hover:bg-[#1D4ED8]"
             >
               <LogIn className="w-4 h-4" />
-              <span>Access Secure Portal</span>
+              <span>Login to Portal</span>
             </Link>
           </div>
         </div>

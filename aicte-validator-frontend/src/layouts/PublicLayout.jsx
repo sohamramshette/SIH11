@@ -1,6 +1,5 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import GovernmentBar from '../components/landing/GovernmentBar';
 import Navbar from '../components/landing/Navbar';
 import Footer from '../components/landing/Footer';
 
@@ -11,7 +10,6 @@ import Footer from '../components/landing/Footer';
 const PublicLayout = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-      <GovernmentBar />
       <Navbar />
       <main className="flex-1">
         {children ? children : <Outlet />}

@@ -28,16 +28,15 @@ const SafeguardsSection = () => {
       <div className="text-center max-w-3xl mx-auto mb-14">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200 text-xs font-bold uppercase tracking-wider mb-3">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-          <span>Statutory Integrity &amp; Transparency</span>
+          <span>Institutional Regulatory Assurance</span>
         </div>
 
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#102D52] tracking-tight leading-tight mb-4">
-          Trust Architecture &amp; Regulatory Safeguards
+          Trust &amp; Safeguards
         </h2>
 
         <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-          Designed with multiple defense-in-depth security layers to safeguard institutional data,
-          prevent arbitrary flags, and preserve statutory accountability.
+          Designed with structured security layers to safeguard institutional data, provide clear evidence citations, and preserve statutory accountability.
         </p>
       </div>
 

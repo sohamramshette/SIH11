@@ -42,7 +42,7 @@ const PromoBanner = () => {
               </div>
               <div className="flex items-center space-x-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Immutable Statutory Audit Trail</span>
+                <span>Structured Statutory Audit Trail</span>
               </div>
             </div>
           </div>

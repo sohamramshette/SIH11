@@ -1,40 +1,42 @@
 import React from 'react';
 import HeroSection from '../components/landing/HeroSection';
 import StatisticsStrip from '../components/landing/StatisticsStrip';
-import PromoBanner from '../components/landing/PromoBanner';
 import FeaturesSection from '../components/landing/FeaturesSection';
+import SystemPreviewSection from '../components/landing/SystemPreviewSection';
 import WorkflowSection from '../components/landing/WorkflowSection';
 import SafeguardsSection from '../components/landing/SafeguardsSection';
-import AboutSection from '../components/landing/AboutSection';
 
 /**
- * LandingPage Component (Phase 1)
- * Assembles all institutional landing page sections in the formal visual style
- * of the AICTE portal reference.
+ * LandingPage Component
+ * Streamlined institutional landing page for SIH evaluation.
+ * Features 6 concise, non-redundant sections:
+ * 1. HeroSection: Problem statement & login access
+ * 2. StatisticsStrip: Illustrative synthetic demo metrics
+ * 3. FeaturesSection: Key Features (Capabilities & Scrutiny Mandate)
+ * 4. SystemPreviewSection: See How the System Works (Compact Preview)
+ * 5. WorkflowSection: End-to-End Scrutiny Pipeline (4 stages)
+ * 6. SafeguardsSection: Trust & Safeguards (Assurance & Disclaimers)
  */
 const LandingPage = () => {
   return (
     <div className="flex flex-col">
-      {/* 1. Hero Section with Headline, Dual CTAs, and Status Search Bar */}
+      {/* 1. Hero Section */}
       <HeroSection />
 
-      {/* 2. Four Key Illustrative Metrics clearly labeled as DEMO DATA */}
+      {/* 2. Key Illustrative Metrics */}
       <StatisticsStrip />
 
-      {/* 3. Wide Promotional Institutional Banner */}
-      <PromoBanner />
-
-      {/* 4. Four Core Feature Blocks with Icons and Handbooks references */}
+      {/* 3. Key Features */}
       <FeaturesSection />
 
-      {/* 5. 4-Step Milestone Workflow Pipeline */}
+      {/* 4. See How the System Works (Interactive Preview) */}
+      <SystemPreviewSection />
+
+      {/* 5. End-to-End Scrutiny Pipeline */}
       <WorkflowSection />
 
-      {/* 6. Security Architecture, Trust Pillars, and Statutory Disclaimers */}
+      {/* 6. Trust & Safeguards */}
       <SafeguardsSection />
-
-      {/* 7. About System, SIH Problem Statement 26261 & APH Standards */}
-      <AboutSection />
     </div>
   );
 };

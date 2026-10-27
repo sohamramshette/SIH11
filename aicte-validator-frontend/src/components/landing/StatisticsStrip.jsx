@@ -1,13 +1,65 @@
-import React from 'react';
-import { statistics } from '../../data/landingPageData';
+import React, { useContext, useMemo } from 'react';
+import { DemoStateContext } from '../../context/DemoStateContext';
+import { statistics as defaultStatistics } from '../../data/landingPageData';
 import { BarChart3, AlertOctagon } from 'lucide-react';
 
 /**
  * Statistics Strip Component
- * Displays four clearly labeled illustrative metrics strictly flagged as DEMO DATA.
- * Styled with formal institutional contrast matching the reference portal.
+ * Displays clearly labeled illustrative metrics calculated directly from the mock
+ * prototype application dataset, with a visible synthetic demo disclaimer.
  */
 const StatisticsStrip = () => {
+  const demoContext = useContext(DemoStateContext);
+  const applications = demoContext?.applications;
+
+  // Calculate actual counts from unified demo applications when available
+  const displayStats = useMemo(() => {
+    if (applications && applications.length > 0) {
+      const total = applications.length;
+      const completed = applications.filter(
+        (a) => a.currentStatus === 'Completed' || a.currentStatus === 'Scrutiny Passed'
+      ).length;
+      const flagged = applications.filter(
+        (a) => (a.flaggedCount || 0) > 0 || a.currentStatus === 'Review Required' || a.currentStatus === 'Escalated'
+      ).length;
+      const pending = applications.filter(
+        (a) => a.currentStatus === 'Under Review' || a.currentStatus === 'Pending Senior Review'
+      ).length;
+
+      return [
+        {
+          id: 'stat-1',
+          label: 'Applications in Demo Queue',
+          value: total.toString(),
+          subtext: 'Mock applications loaded in prototype state',
+          metricType: 'Mock Dataset',
+        },
+        {
+          id: 'stat-2',
+          label: 'Scrutiny Reviews Completed',
+          value: completed.toString(),
+          subtext: 'Simulated applications with completed validations',
+          metricType: 'Processed',
+        },
+        {
+          id: 'stat-3',
+          label: 'Documents Flagged for Review',
+          value: flagged.toString(),
+          subtext: 'Discrepancy anomalies identified for officer inspection',
+          metricType: 'Exceptions',
+        },
+        {
+          id: 'stat-4',
+          label: 'Cases Awaiting Review',
+          value: pending.toString(),
+          subtext: 'Applications in queue for authorized scrutiny sign-off',
+          metricType: 'Pending',
+        },
+      ];
+    }
+    return defaultStatistics;
+  }, [applications]);
+
   return (
     <section className="bg-[#102D52] text-white py-10 px-4 sm:px-6 lg:px-8 border-y-4 border-[#E05A18]">
       <div className="max-w-7xl mx-auto">
@@ -20,15 +72,15 @@ const StatisticsStrip = () => {
             </h2>
           </div>
 
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-md bg-amber-400 text-slate-950 text-xs font-black tracking-wider uppercase shadow-xs">
-            <AlertOctagon className="w-3.5 h-3.5" />
-            <span>DEMO DATA · PROTOTYPE BENCHMARKS</span>
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-amber-400 text-slate-950 text-xs font-bold tracking-wide shadow-xs">
+            <AlertOctagon className="w-3.5 h-3.5 shrink-0 text-slate-950" />
+            <span>Illustrative Demo Data — Not Official AICTE Statistics</span>
           </div>
         </div>
 
         {/* Four Key Metrics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {statistics.map((stat, idx) => (
+          {displayStats.map((stat, idx) => (
             <div
               key={stat.id}
               className="relative p-5 bg-[#0C2442] rounded-lg border border-blue-900/70 hover:border-blue-700 transition-colors"
@@ -58,9 +110,8 @@ const StatisticsStrip = () => {
         </div>
 
         {/* Clear Institutional Disclaimer Note */}
-        <div className="mt-6 text-center text-[11px] text-blue-200/70">
-          Note: All values displayed above are synthetic test values utilized for Smart India Hackathon prototype validation.
-          They do not reflect official AICTE annual statistical records.
+        <div className="mt-6 text-center text-[11px] text-blue-200/80 bg-blue-950/60 py-2.5 px-4 rounded-lg border border-blue-900/80 max-w-3xl mx-auto">
+          Illustrative Demo Data — Not Official AICTE Statistics. Figures reflect active application counts loaded in the prototype evaluation environment.
         </div>
       </div>
     </section>

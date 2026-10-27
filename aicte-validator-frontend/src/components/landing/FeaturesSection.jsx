@@ -10,20 +10,22 @@ import { ShieldCheck, ArrowRight } from 'lucide-react';
 const FeaturesSection = () => {
   return (
     <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
+      {/* Target anchor for existing about links */}
+      <div id="about" className="scroll-mt-24" />
+
       {/* Institutional Section Heading */}
       <div className="text-center max-w-3xl mx-auto mb-14">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 text-[#102D52] border border-blue-200 text-xs font-bold uppercase tracking-wider mb-3">
           <ShieldCheck className="w-3.5 h-3.5 text-[#1D4ED8]" />
-          <span>Core Capabilities &amp; System Modules</span>
+          <span>Demonstration Modules</span>
         </div>
 
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#102D52] tracking-tight leading-tight mb-4">
-          Engineered for Rigorous Regulatory Scrutiny
+          Key Features
         </h2>
 
         <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-          A multi-tiered verification pipeline designed to assist scrutiny committees in verifying institutional
-          infrastructure, faculty credentials, and statutory legal documentation.
+          Four core capabilities designed to check application completeness, assist with document verification, and support officer review workflows.
         </p>
       </div>
 
@@ -42,21 +44,21 @@ const FeaturesSection = () => {
         ))}
       </div>
 
-      {/* Bottom Regulatory Compliance Assurance Strip */}
+      {/* Bottom Demonstration Scope Strip */}
       <div className="mt-12 bg-slate-100 rounded-xl p-5 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
         <div className="flex items-center space-x-3 text-slate-700">
           <span className="font-bold text-[#102D52] uppercase tracking-wider text-[11px] bg-white px-2.5 py-1 rounded border border-slate-300">
-            Audit Standard
+            Demonstration Scope
           </span>
           <span>
-            Complies with AICTE Approval Process Handbook (APH) regulations and Central Vigilance Commission (CVC) audit criteria.
+            Rule-based application checks and assistive review workflows developed for prototype evaluation.
           </span>
         </div>
         <a
-          href="#safeguards"
+          href="#workflow"
           className="font-bold text-[#1D4ED8] hover:text-[#102D52] shrink-0 flex items-center space-x-1"
         >
-          <span>Examine Security Safeguards</span>
+          <span>View Verification Workflow</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </a>
       </div>
