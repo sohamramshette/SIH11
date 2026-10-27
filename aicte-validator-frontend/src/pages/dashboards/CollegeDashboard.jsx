@@ -1,8 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CollegeSidebar from '../../components/dashboard/CollegeSidebar';
 import CollegeHeader from '../../components/dashboard/CollegeHeader';
-import StatCard from '../../components/dashboard/StatCard';
 import StatusBadge from '../../components/dashboard/StatusBadge';
 import CollegeDetailsModal from '../../components/dashboard/CollegeDetailsModal';
 import MultiStepApplicationForm from '../../components/dashboard/MultiStepApplicationForm';
@@ -13,7 +11,6 @@ import QueriesClarificationsView from '../../components/dashboard/QueriesClarifi
 import { useDemoState } from '../../hooks/useDemoState';
 
 import {
-  collegeSidebarNavItems,
   demoCollegeProfile,
   pendingCollegeActions,
   recentCollegeActivity,
@@ -30,6 +27,9 @@ import {
   ArrowRight,
   Clock,
   Building2,
+  FileText,
+  Edit3,
+  AlertTriangle,
 } from 'lucide-react';
 
 /**
@@ -42,7 +42,6 @@ const CollegeDashboard = () => {
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState('overview');
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Selected application for modal view
   const [selectedApp, setSelectedApp] = useState(null);
@@ -146,96 +145,73 @@ const CollegeDashboard = () => {
     return filteredApplications.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredApplications, currentPage, itemsPerPage]);
 
-  const currentTabItem = collegeSidebarNavItems.find((item) => item.id === activeTab) || collegeSidebarNavItems[0];
-
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex text-slate-800">
-      {/* 1. Fixed Navy-Blue Sidebar */}
-      <CollegeSidebar
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col text-slate-800">
+      {/* Top Horizontal Navigation Bar */}
+      <CollegeHeader
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         onLogout={handleLogout}
-        mobileOpen={mobileSidebarOpen}
-        onCloseMobile={() => setMobileSidebarOpen(false)}
       />
 
-      {/* 2. Main Dashboard Content Wrapper */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
-        {/* Top Header */}
-        <CollegeHeader
-          activeTabTitle={currentTabItem.label}
-          onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
-        />
-
-        {/* Persistent Demonstration Prototype Notice (Section 2) */}
-        <div className="bg-amber-500/10 border-b border-amber-200/80 px-4 sm:px-6 lg:px-8 py-2 text-xs text-amber-950 flex flex-wrap items-center justify-between gap-2">
+        {/* Compact Institutional Console Notice */}
+        <div className="bg-amber-50/80 border-b border-amber-200/60 px-4 sm:px-6 lg:px-8 py-1.5 text-[11px] text-amber-950 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center space-x-2">
-            <span className="font-bold uppercase tracking-wider text-[10px] bg-amber-200 px-1.5 py-0.2 rounded text-amber-950">
-              DEMONSTRATION PROTOTYPE
+            <span className="font-bold uppercase tracking-wider text-[9px] bg-amber-200 px-1.5 py-0.2 rounded text-amber-950">
+              INSTITUTIONAL CONSOLE
             </span>
             <span className="text-slate-700">
-              All records, application statuses, and validation results are simulated for SIH 26261 demonstration.
+              Active portal session for {demoCollegeProfile.institutionName} (AISHE: {demoCollegeProfile.aisheCode}).
             </span>
           </div>
-          <span className="text-[11px] font-mono text-slate-500">
-            AISHE: {demoCollegeProfile.aisheCode} · BITS Bhopal
+          <span className="text-[10px] font-mono text-slate-500">
+            Signatory: {demoCollegeProfile.nodalOfficer.name} · AY 2026-27 Active Cycle
           </span>
         </div>
 
         {/* Dynamic Main Body Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-4 sm:p-5 lg:p-6 space-y-5 max-w-7xl mx-auto w-full">
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
-            <div className="space-y-8 animate-fadeIn">
-              {/* Summary Cards (Section 3) */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Institutional Application Pipeline
-                  </h2>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    AY 2026-27 Active Cycle
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                  {dynamicSummaryStats.map((stat) => (
-                    <StatCard
-                      key={stat.id}
-                      title={stat.title}
-                      value={stat.value}
-                      change={stat.trend}
-                      subtext={stat.subtext}
-                      iconName={stat.iconName}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Quick Actions Bar */}
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold">
-                    <Building2 className="w-5 h-5" />
+            <div className="space-y-5 animate-fadeIn">
+              {/* College Identity & Command Header */}
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center justify-center font-bold shrink-0 shadow-2xs">
+                    <Building2 className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-[#102D52]">
-                      {demoCollegeProfile.institutionName}
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Central Regional Office · Regulatory Affiliation Active
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-base sm:text-lg font-black text-[#102D52] leading-tight">
+                        {demoCollegeProfile.institutionName}
+                      </h2>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
+                        Affiliated to RGPV
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-500 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mt-1 font-medium">
+                      <span className="font-mono text-slate-700 bg-slate-100 px-1.5 py-0.2 rounded font-semibold">
+                        AISHE: {demoCollegeProfile.aisheCode}
+                      </span>
+                      <span>·</span>
+                      <span>Permanent ID: {demoCollegeProfile.permanentId}</span>
+                      <span>·</span>
+                      <span>{demoCollegeProfile.region}</span>
+                      <span>·</span>
+                      <span>Approved Intake: {demoCollegeProfile.totalApprovedIntake}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2.5">
+                {/* Quick Action Buttons */}
+                <div className="flex items-center space-x-2 shrink-0 self-start md:self-auto">
                   <button
                     type="button"
                     onClick={() => setActiveTab('submit-application')}
-                    className="inline-flex items-center space-x-1.5 px-4 py-2 text-xs font-bold rounded-lg bg-[#102D52] hover:bg-[#1D4ED8] text-white shadow-xs transition-colors"
+                    className="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-bold rounded-lg bg-[#102D52] hover:bg-[#1D4ED8] text-white shadow-xs transition-colors"
                   >
                     <FilePlus2 className="w-3.5 h-3.5" />
-                    <span>Submit New Application</span>
+                    <span>+ New Application</span>
                   </button>
 
                   <button
@@ -243,96 +219,261 @@ const CollegeDashboard = () => {
                     onClick={() => setActiveTab('document-uploads')}
                     className="inline-flex items-center space-x-1.5 px-3 py-2 text-xs font-bold rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
                   >
-                    <UploadCloud className="w-3.5 h-3.5" />
-                    <span>Upload Documents</span>
+                    <UploadCloud className="w-3.5 h-3.5 text-blue-700" />
+                    <span>Upload Docs</span>
                   </button>
                 </div>
               </div>
 
-              {/* Two Column Layout: Pending Actions + Recent Activity Feed */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                {/* Left: Pending Actions requiring attention */}
-                <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-4 h-4 text-amber-600" />
-                      <h2 className="text-sm font-bold text-[#102D52]">
-                        Pending Actions &amp; Compliance Tasks
-                      </h2>
+              {/* Compact 4-Segment Key Performance Metric Strip */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                {dynamicSummaryStats.map((stat, idx) => {
+                  const isAttention = stat.id === 'stat-attention' && Number(stat.value) > 0;
+                  return (
+                    <div
+                      key={stat.id}
+                      className={`p-3.5 rounded-xl border transition-all flex items-center justify-between ${
+                        isAttention
+                          ? 'bg-amber-50/70 border-amber-300 shadow-2xs'
+                          : 'bg-white border-slate-200 shadow-2xs'
+                      }`}
+                    >
+                      <div>
+                        <span className="text-[11px] font-semibold text-slate-500 block leading-tight">
+                          {stat.title}
+                        </span>
+                        <span
+                          className={`text-xl sm:text-2xl font-black tracking-tight block mt-0.5 ${
+                            isAttention ? 'text-amber-900' : 'text-[#102D52]'
+                          }`}
+                        >
+                          {stat.value}
+                        </span>
+                        <span
+                          className={`text-[10px] font-medium block mt-0.5 ${
+                            isAttention ? 'text-amber-800 font-bold' : 'text-slate-500'
+                          }`}
+                        >
+                          {stat.trend}
+                        </span>
+                      </div>
+
+                      <div
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                          isAttention
+                            ? 'bg-amber-200 text-amber-900'
+                            : idx === 0
+                            ? 'bg-blue-50 text-blue-800'
+                            : idx === 1
+                            ? 'bg-slate-100 text-slate-700'
+                            : 'bg-indigo-50 text-indigo-800'
+                        }`}
+                      >
+                        {idx === 0 && <FileText className="w-4 h-4" />}
+                        {idx === 1 && <Edit3 className="w-4 h-4" />}
+                        {idx === 2 && <Clock className="w-4 h-4" />}
+                        {idx === 3 && <AlertTriangle className="w-4 h-4" />}
+                      </div>
                     </div>
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200">
-                      {pendingCollegeActions.length} PENDING
-                    </span>
+                  );
+                })}
+              </div>
+
+              {/* Two Column Layout: College Tasks + Applications & Status */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                {/* Left Column (7 cols): College Tasks & Application Overview */}
+                <div className="lg:col-span-7 space-y-5">
+                  {/* Card 1: Action Items & Clarification Queries */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-3.5">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-4 h-4 text-amber-600" />
+                        <h3 className="text-sm font-bold text-[#102D52]">
+                          Action Items &amp; Tasks
+                        </h3>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200">
+                        {pendingCollegeActions.length} Pending
+                      </span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {pendingCollegeActions.map((task) => (
+                        <div
+                          key={task.id}
+                          className="p-3 rounded-lg border border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                        >
+                          <div className="space-y-0.5">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-bold text-[#102D52]">{task.title}</span>
+                              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-200 text-amber-950">
+                                {task.priority}
+                              </span>
+                            </div>
+                            <p className="text-slate-600 text-[11px] leading-relaxed">
+                              {task.description}
+                            </p>
+                            <div className="text-[10px] text-slate-400 font-mono">
+                              Ref: {task.targetApp} · Due: {task.deadline}
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (task.id === 'act-1') setActiveTab('queries');
+                              else if (task.id === 'act-2') setActiveTab('document-uploads');
+                              else setActiveTab('submit-application');
+                            }}
+                            className="inline-flex items-center space-x-1 px-3 py-1.5 text-xs font-bold rounded-md bg-white border border-slate-300 text-[#102D52] hover:bg-slate-100 shrink-0 self-start sm:self-auto shadow-2xs"
+                          >
+                            <span>
+                              {task.id === 'act-1'
+                                ? 'Respond Query'
+                                : task.id === 'act-2'
+                                ? 'Upload Doc'
+                                : 'Resume Draft'}
+                            </span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="space-y-3">
-                    {pendingCollegeActions.map((task) => (
-                      <div
-                        key={task.id}
-                        className="p-3.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                  {/* Card 2: My Applications Overview (Directly on Dashboard) */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-3.5">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                      <div className="flex items-center space-x-2">
+                        <FileText className="w-4 h-4 text-[#102D52]" />
+                        <h3 className="text-sm font-bold text-[#102D52]">
+                          My Submitted Applications
+                        </h3>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('my-applications')}
+                        className="text-xs font-semibold text-blue-700 hover:text-blue-900 hover:underline flex items-center gap-1"
                       >
-                        <div className="space-y-1">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-bold text-[#102D52]">{task.title}</span>
-                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-200 text-amber-950">
-                              {task.priority}
-                            </span>
+                        <span>View All ({collegeApps.length})</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {collegeApps.slice(0, 3).map((app) => (
+                        <div
+                          key={app.id}
+                          className="p-3 rounded-lg border border-slate-200 hover:border-slate-300 bg-white flex items-center justify-between gap-3 text-xs"
+                        >
+                          <div className="min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-mono font-bold text-[#102D52] truncate">
+                                {app.id}
+                              </span>
+                              <span className="text-slate-300">·</span>
+                              <span className="text-slate-700 font-medium truncate">
+                                {app.applicationType}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-500 mt-0.5">
+                              Submitted: {app.submissionDate} · AY {app.academicYear}
+                            </div>
                           </div>
-                          <p className="text-slate-600 text-[11px] leading-relaxed">
-                            {task.description}
-                          </p>
-                          <div className="text-[10px] text-slate-400 font-mono">
-                            Ref: {task.targetApp} · Due: {task.deadline}
+
+                          <div className="flex items-center space-x-2 shrink-0">
+                            <StatusBadge status={app.currentStatus} />
+                            <button
+                              type="button"
+                              onClick={() => setSelectedApp(app)}
+                              className="p-1 rounded text-slate-500 hover:text-[#102D52] hover:bg-slate-100"
+                              title="View Application Details"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (task.id === 'act-1') setActiveTab('queries');
-                            else if (task.id === 'act-2') setActiveTab('document-uploads');
-                            else setActiveTab('submit-application');
-                          }}
-                          className="inline-flex items-center space-x-1 px-3 py-1.5 text-xs font-bold rounded-md bg-white border border-slate-300 text-[#102D52] hover:bg-slate-100 shrink-0 self-start sm:self-auto"
-                        >
-                          <span>Take Action</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Right: Recent Application Activity */}
-                <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <h2 className="text-sm font-bold text-[#102D52]">
-                      Recent Application Timeline
-                    </h2>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">
-                      LOG
-                    </span>
+                {/* Right Column (5 cols): Institutional Profile Snapshot & Timeline */}
+                <div className="lg:col-span-5 space-y-5">
+                  {/* Card 1: College Institutional Compliance Profile */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-3">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                      <h3 className="text-sm font-bold text-[#102D52]">
+                        Institution Profile
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('profile')}
+                        className="text-xs font-semibold text-blue-700 hover:text-blue-900 hover:underline"
+                      >
+                        Full Details →
+                      </button>
+                    </div>
+
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-100">
+                        <span className="text-slate-500">Campus Land Area</span>
+                        <span className="font-bold text-slate-800">
+                          {demoCollegeProfile.landAreaAcres} Acres (Contiguous)
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-100">
+                        <span className="text-slate-500">Built-Up Floor Area</span>
+                        <span className="font-bold text-slate-800">
+                          {demoCollegeProfile.builtUpAreaSqM.toLocaleString()} sq.m (Valid FSI)
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-100">
+                        <span className="text-slate-500">Approved Total Intake</span>
+                        <span className="font-bold text-slate-800">
+                          {demoCollegeProfile.totalApprovedIntake} Seats (5 Programs)
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-100">
+                        <span className="text-slate-500">Nodal Signatory</span>
+                        <span className="font-bold text-slate-800">
+                          {demoCollegeProfile.nodalOfficer.name}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="space-y-3.5 text-xs">
-                    {recentCollegeActivity.map((act) => (
-                      <div key={act.id} className="flex items-start space-x-3">
-                        <div className="w-2 h-2 rounded-full bg-blue-800 mt-1.5 shrink-0" />
-                        <div>
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="font-bold text-slate-800 text-xs">
-                              {act.title}
-                            </span>
-                            <span className="text-[10px] text-slate-400 font-mono">
-                              {act.time}
-                            </span>
+                  {/* Card 2: Recent Activity Timeline */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-3">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                      <h3 className="text-sm font-bold text-[#102D52]">
+                        Recent Activity Log
+                      </h3>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold">
+                        TIMELINE
+                      </span>
+                    </div>
+
+                    <div className="space-y-3 text-xs">
+                      {recentCollegeActivity.map((act) => (
+                        <div key={act.id} className="flex items-start space-x-2.5">
+                          <div className="w-2 h-2 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="font-bold text-slate-800 text-xs truncate">
+                                {act.title}
+                              </span>
+                              <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                                {act.time}
+                              </span>
+                            </div>
+                            <p className="text-slate-600 text-[11px] mt-0.5 leading-relaxed">
+                              {act.description}
+                            </p>
                           </div>
-                          <p className="text-slate-600 text-[11px] mt-0.5 leading-relaxed">
-                            {act.description}
-                          </p>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -629,7 +770,6 @@ const CollegeDashboard = () => {
             </div>
           )}
         </main>
-      </div>
 
       {/* 3. Details Inspection Modal */}
       {selectedApp && (

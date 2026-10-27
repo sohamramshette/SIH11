@@ -5,7 +5,6 @@ import {
   FileText,
   AlertOctagon,
   UserCheck,
-  Cpu,
   User,
   CheckCircle2,
   RotateCcw,
@@ -285,7 +284,7 @@ const SeniorCaseReviewWorkspace = ({
               <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
                 <div className="flex items-center space-x-2.5">
                   <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
-                    <Cpu className="w-4 h-4 text-blue-600" />
+                    <FileCheck2 className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="text-sm font-black text-[#102D52]">

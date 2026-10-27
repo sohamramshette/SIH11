@@ -20,7 +20,7 @@ import {
 
 import {
   FileCheck2,
-  Cpu,
+  FileSearch,
   BarChart3,
   Settings,
   Download,
@@ -312,8 +312,8 @@ const AdminDashboard = () => {
             <div className="space-y-6 animate-fadeIn">
               <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
                 <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center font-bold">
-                    <Cpu className="w-6 h-6" />
+                  <div className="w-10 h-10 rounded-lg bg-blue-100 text-[#102D52] flex items-center justify-center font-bold">
+                    <FileSearch className="w-6 h-6 text-[#102D52]" />
                   </div>
                   <div>
                     <h2 className="text-base font-bold text-[#102D52]">

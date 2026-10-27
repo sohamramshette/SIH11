@@ -5,7 +5,7 @@ import {
   AlertTriangle,
   Info,
   ShieldAlert,
-  Sparkles,
+  FileCheck2,
   HelpCircle,
   RotateCcw,
 } from 'lucide-react';
@@ -219,7 +219,7 @@ const PreliminaryValidationChecklist = ({ onOpenClarificationQuery }) => {
                 >
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center space-x-1.5 font-bold">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                      <FileCheck2 className="w-3.5 h-3.5 text-amber-700" />
                       <span>Suggested Next Action</span>
                     </div>
 

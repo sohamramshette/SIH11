@@ -11,7 +11,7 @@ export const sidebarNavItems = [
   { id: 'applications', label: 'Applications', iconName: 'FileSpreadsheet', badge: '10' },
   { id: 'verification', label: 'Document Verification', iconName: 'FileCheck2' },
   { id: 'colleges', label: 'College Management', iconName: 'Building2' },
-  { id: 'ai-queue', label: 'AI Review Queue', iconName: 'Cpu', badge: '4', badgeColor: 'bg-amber-400 text-slate-950' },
+  { id: 'ai-queue', label: 'Discrepancy Queue', iconName: 'FileSearch', badge: '4', badgeColor: 'bg-amber-400 text-slate-950' },
   { id: 'reports', label: 'Reports', iconName: 'BarChart3' },
   { id: 'audit-logs', label: 'Audit Logs', iconName: 'History' },
   { id: 'settings', label: 'Settings', iconName: 'Settings' },

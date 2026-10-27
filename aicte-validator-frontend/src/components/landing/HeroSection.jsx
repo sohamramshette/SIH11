@@ -55,22 +55,6 @@ const HeroSection = () => {
       <div className="absolute top-1/2 -left-24 w-80 h-80 rounded-full bg-amber-50/40 pointer-events-none blur-3xl -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Eyebrow Badge & Prototype Disclaimer Label */}
-        <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#102D52] text-xs font-bold tracking-wide shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-[#1D4ED8]" />
-            <span className="uppercase text-[11px] font-black tracking-wider text-[#102D52]">
-              SMART INDIA HACKATHON · PS 26261
-            </span>
-          </div>
-
-          <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold shadow-xs">
-            <span className="text-[11px] font-semibold text-amber-900">
-              Student Prototype · Not an Official AICTE Portal
-            </span>
-          </div>
-        </div>
-
         {/* Hero Grid: Left Content, Right Document Dossier */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-12">
           {/* Left Column: Headlines & Call to Actions */}

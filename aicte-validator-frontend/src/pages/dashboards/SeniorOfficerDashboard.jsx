@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SeniorOfficerSidebar from '../../components/dashboard/SeniorOfficerSidebar';
 import SeniorOfficerHeader from '../../components/dashboard/SeniorOfficerHeader';
 import StatCard from '../../components/dashboard/StatCard';
 import StatusBadge from '../../components/dashboard/StatusBadge';
@@ -15,7 +14,6 @@ import AuditTrailView from '../../components/dashboard/AuditTrailView';
 import { useDemoState } from '../../hooks/useDemoState';
 
 import {
-  seniorSidebarNavItems,
   seniorSummaryStats,
 } from '../../data/seniorOfficerDashboardData';
 
@@ -51,7 +49,6 @@ const SeniorOfficerDashboard = () => {
 
   // Navigation state
   const [activeTab, setActiveTab] = useState('overview');
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Selected case
   const [selectedCase, setSelectedCase] = useState(null);
@@ -175,16 +172,10 @@ const SeniorOfficerDashboard = () => {
     return applications.filter((a) => a.currentStatus === 'Escalated' || a.urgency === 'Critical');
   }, [applications]);
 
-  // Active tab title
-  const activeTabMeta = seniorSidebarNavItems.find((item) => item.id === activeTab);
-  const activeTabTitle = activeTab === 'workspace'
-    ? `Case Review Workspace: ${selectedCase?.id || ''}`
-    : activeTabMeta?.label || 'Directorate Overview';
-
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex">
-      {/* Sidebar Navigation */}
-      <SeniorOfficerSidebar
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col">
+      {/* Top Horizontal Navigation Bar */}
+      <SeniorOfficerHeader
         activeTab={activeTab}
         onSelectTab={(tabId) => {
           setActiveTab(tabId);
@@ -192,19 +183,11 @@ const SeniorOfficerDashboard = () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onLogout={handleLogout}
-        mobileOpen={mobileSidebarOpen}
-        onCloseMobile={() => setMobileSidebarOpen(false)}
+        searchQuery={headerSearch}
+        onSearchChange={setHeaderSearch}
+        workspaceActive={activeTab === 'workspace'}
+        caseId={selectedCase?.id}
       />
-
-      {/* Main Content Area */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
-        {/* Top Header */}
-        <SeniorOfficerHeader
-          activeTabTitle={activeTabTitle}
-          onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
-          searchQuery={headerSearch}
-          onSearchChange={setHeaderSearch}
-        />
 
         {/* Global Feedback Banner */}
         {feedbackMessage && (
@@ -232,7 +215,7 @@ const SeniorOfficerDashboard = () => {
         )}
 
         {/* Page Content Container */}
-        <main className="p-4 sm:p-6 lg:p-8 flex-1">
+        <main className="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl mx-auto w-full">
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-6 animate-fadeIn pb-12">
@@ -675,7 +658,6 @@ const SeniorOfficerDashboard = () => {
             <AuditTrailView auditEvents={auditList} />
           )}
         </main>
-      </div>
 
       {/* Senior Officer Decision Workflow Modal */}
       {decisionModalOpen && (

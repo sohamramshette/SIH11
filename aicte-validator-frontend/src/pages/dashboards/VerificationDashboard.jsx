@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import VerificationSidebar from '../../components/dashboard/VerificationSidebar';
 import VerificationHeader from '../../components/dashboard/VerificationHeader';
 import StatCard from '../../components/dashboard/StatCard';
 import StatusBadge from '../../components/dashboard/StatusBadge';
@@ -12,7 +11,6 @@ import EscalationModal from '../../components/dashboard/EscalationModal';
 import { useDemoState } from '../../hooks/useDemoState';
 
 import {
-  verificationSidebarNavItems,
   verificationSummaryStats,
 } from '../../data/verificationDashboardData';
 
@@ -55,7 +53,6 @@ const VerificationDashboard = () => {
 
   // Navigation state
   const [activeTab, setActiveTab] = useState('overview');
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Selected application in review
   const [selectedApp, setSelectedApp] = useState(null);
@@ -182,30 +179,16 @@ const VerificationDashboard = () => {
     return filteredApplications.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredApplications, currentPage, itemsPerPage]);
 
-  const currentTabItem =
-    verificationSidebarNavItems.find((item) => item.id === activeTab) ||
-    verificationSidebarNavItems[0];
-
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex text-slate-800">
-      {/* 1. Fixed Navy Sidebar */}
-      <VerificationSidebar
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col text-slate-800">
+      {/* Top Horizontal Navigation Bar */}
+      <VerificationHeader
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         onLogout={handleLogout}
-        mobileOpen={mobileSidebarOpen}
-        onCloseMobile={() => setMobileSidebarOpen(false)}
+        searchQuery={headerSearch}
+        onSearchChange={setHeaderSearch}
       />
-
-      {/* 2. Main Body Content (offset on desktop) */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
-        {/* Top Header */}
-        <VerificationHeader
-          activeTabTitle={currentTabItem.label}
-          onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
-          searchQuery={headerSearch}
-          onSearchChange={setHeaderSearch}
-        />
 
         {/* Persistent Sub-Header Notice Bar */}
         <div className="bg-amber-500/10 border-b border-amber-200/80 px-4 sm:px-6 lg:px-8 py-2 text-xs text-amber-950 flex flex-wrap items-center justify-between gap-2">
@@ -236,7 +219,7 @@ const VerificationDashboard = () => {
         )}
 
         {/* Main Content Area */}
-        <main className="p-4 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-6 animate-fadeIn">
@@ -808,7 +791,6 @@ const VerificationDashboard = () => {
             </div>
           )}
         </main>
-      </div>
 
       {/* Clarification Query Modal */}
       <ClarificationQueryModal
