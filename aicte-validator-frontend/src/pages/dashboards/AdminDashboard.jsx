@@ -203,7 +203,7 @@ const AdminDashboard = () => {
                   <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
                     <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1">OCR Parser Status</span>
                     <span className="text-base font-black text-emerald-700 block">Operational (99.8%)</span>
-                    <span className="text-[11px] text-slate-600 mt-1 block">Tesseract + LayoutLMv3 pipeline active</span>
+                    <span className="text-[11px] text-slate-600 mt-1 block">Sarvam Document AI + Forensics pipeline active</span>
                   </div>
                   <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
                     <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Cryptographic Seal Check</span>

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { DEMO_ROLES } from '../services/mockAuth';
 import { useDemoState } from '../hooks/useDemoState';
+import { authService, ROLE_DEFAULT_PASSWORDS } from '../services/api';
 
 /**
  * LoginPage Component
@@ -25,23 +26,33 @@ const LoginPage = () => {
   const { loginDemoUser } = useDemoState();
   const [loggingInRoleId, setLoggingInRoleId] = useState(null);
 
-  // Direct 1-click role login handler
-  const handleRoleLogin = (role) => {
+  // Direct 1-click role login handler connecting to live backend API
+  const handleRoleLogin = async (role) => {
     setLoggingInRoleId(role.id);
 
+    // Call live FastAPI authentication endpoint with graceful fallback
+    const authResult = await authService.login(
+      role.email,
+      ROLE_DEFAULT_PASSWORDS[role.id],
+      role.id
+    );
+
     const userPayload = {
-      id: role.defaultUserId,
+      id: authResult.data?.user?.id || role.defaultUserId,
       email: role.email,
       role: role.id,
       roleName: role.roleName,
       badge: role.badge,
+      officialId: authResult.data?.user?.official_id || role.defaultUserId,
+      institution: authResult.data?.user?.institution,
+      isLiveBackend: authResult.isLive,
     };
 
     loginDemoUser(userPayload);
 
     setTimeout(() => {
       navigate(role.targetRoute);
-    }, 180);
+    }, 150);
   };
 
   // Role visual configuration map

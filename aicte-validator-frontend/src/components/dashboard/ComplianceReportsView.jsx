@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { complianceReportsSummary } from '../../data/seniorOfficerDashboardData';
 
+import { reportService } from '../../services/api';
+
 /**
  * ComplianceReportsView Component (Phase 9)
  * Executive compliance reporting with date & application type filters
@@ -46,48 +48,63 @@ const ComplianceReportsView = ({ applications = [] }) => {
     return counts;
   }, [filteredApps]);
 
-  // Functional CSV Export from actual active records
-  const handleExportCSV = () => {
-    const headers = [
-      'Application ID',
-      'Institution Name',
-      'AISHE Code',
-      'Region',
-      'Application Type',
-      'Stream',
-      'Submission Date',
-      'Verification Officer',
-      'Preliminary Outcome',
-      'Current Status',
-      'Escalation Reason',
-      'Urgency',
-    ];
+  // Functional CSV Export with server-side API and client-side fallback
+  const handleExportCSV = async () => {
+    try {
+      const blob = await reportService.downloadExportCsv({
+        type_filter: typeFilter !== 'ALL' ? typeFilter : undefined,
+      });
+      const url = URL.createObjectURL(new Blob([blob], { type: 'text/csv;charset=utf-8;' }));
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `AICTE_VerifyAI_Compliance_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Local client-side fallback if backend is offline
+      const headers = [
+        'Application ID',
+        'Institution Name',
+        'AISHE Code',
+        'Region',
+        'Application Type',
+        'Stream',
+        'Submission Date',
+        'Verification Officer',
+        'Preliminary Outcome',
+        'Current Status',
+        'Escalation Reason',
+        'Urgency',
+      ];
 
-    const rows = filteredApps.map((app) => [
-      `"${app.id}"`,
-      `"${app.institutionName || app.collegeName || 'Educational Institution'}"`,
-      `"${app.aisheCode || 'N/A'}"`,
-      `"${app.region || 'Central Region'}"`,
-      `"${app.applicationType || 'EoA'}"`,
-      `"${app.stream || 'Engineering & Technology'}"`,
-      `"${app.submissionDate || 'N/A'}"`,
-      `"${app.verificationOfficer?.name || 'N/A'}"`,
-      `"${app.preliminaryOutcome || 'In Scrutiny Queue'}"`,
-      `"${app.currentStatus || 'Under Review'}"`,
-      `"${app.escalationReason || 'None'}"`,
-      `"${app.urgency || 'Normal'}"`,
-    ]);
+      const rows = filteredApps.map((app) => [
+        `"${app.id}"`,
+        `"${app.institutionName || app.collegeName || 'Educational Institution'}"`,
+        `"${app.aisheCode || 'N/A'}"`,
+        `"${app.region || 'Central Region'}"`,
+        `"${app.applicationType || 'EoA'}"`,
+        `"${app.stream || 'Engineering & Technology'}"`,
+        `"${app.submissionDate || 'N/A'}"`,
+        `"${app.verificationOfficer?.name || 'N/A'}"`,
+        `"${app.preliminaryOutcome || 'In Scrutiny Queue'}"`,
+        `"${app.currentStatus || 'Under Review'}"`,
+        `"${app.escalationReason || 'None'}"`,
+        `"${app.urgency || 'Normal'}"`,
+      ]);
 
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `aicte_senior_compliance_report_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `aicte_senior_compliance_report_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   };
 
   return (

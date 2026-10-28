@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
 
 import { DemoStateProvider } from './context/DemoStateContext';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 /**
  * Root Application Component
@@ -10,9 +11,11 @@ import { DemoStateProvider } from './context/DemoStateContext';
 const App = () => {
   return (
     <BrowserRouter>
-      <DemoStateProvider>
-        <AppRoutes />
-      </DemoStateProvider>
+      <ErrorBoundary>
+        <DemoStateProvider>
+          <AppRoutes />
+        </DemoStateProvider>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 };
