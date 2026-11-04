@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging import setup_logging
@@ -66,6 +67,22 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Global unhandled exception on {request.url.path}: {exc}", exc_info=True)
+    response = JSONResponse(
+        status_code=500,
+        content={"detail": str(exc), "error_type": type(exc).__name__},
+    )
+    origin = request.headers.get("origin")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
+
 @app.get("/", tags=["Root"])
 def root():
     return {
@@ -79,8 +96,21 @@ def root():
 
 @app.get("/health", tags=["Root"])
 def health_check():
+    db_status = "unknown"
+    try:
+        from app.db.session import SessionLocal
+        from app.models.user import User
+        db = SessionLocal()
+        user_count = db.query(User).count()
+        db_status = f"connected ({user_count} users)"
+        db.close()
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+
     return {
         "status": "healthy",
         "service": settings.PROJECT_NAME,
         "environment": settings.ENVIRONMENT,
+        "database": db_status,
+        "cors_origins": settings.CORS_ORIGINS,
     }

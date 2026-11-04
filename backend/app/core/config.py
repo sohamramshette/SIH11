@@ -49,15 +49,18 @@ class Settings(BaseSettings):
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def assemble_database_url(cls, v: str) -> str:
-        if isinstance(v, str) and v.startswith("postgres://"):
-            return v.replace("postgres://", "postgresql://", 1)
+        if isinstance(v, str):
+            v = v.strip().strip("'\"")
+            if v.startswith("postgres://"):
+                v = v.replace("postgres://", "postgresql://", 1)
         return v
 
     @field_validator("CORS_ORIGINS", mode="after")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
         if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
+            v = v.strip().strip("'\"")
+            return [origin.strip().strip("'\"") for origin in v.split(",") if origin.strip()]
         return v
 
     model_config = SettingsConfigDict(
