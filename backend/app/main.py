@@ -14,10 +14,21 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.PROJECT_NAME} API [{settings.ENVIRONMENT}]")
     logger.info(f"CORS origins configured: {settings.CORS_ORIGINS}")
     try:
-        from app.db.session import engine
-        from app.models import Base
+        from app.db.session import engine, SessionLocal
+        from app.models import Base, User
         Base.metadata.create_all(bind=engine)
-        logger.info("Database schema verified and initialized.")
+
+        # Verify seed demo users exist for live authentication
+        db = SessionLocal()
+        try:
+            admin_user = db.query(User).filter(User.email == "admin.sih@aicte-demo.gov.in").first()
+            if not admin_user:
+                from app.db.init_db import init_db
+                init_db()
+        finally:
+            db.close()
+
+        logger.info("Database schema and demo accounts verified successfully.")
     except Exception as e:
         logger.warning(f"Database schema auto-check note: {e}")
     yield
@@ -34,10 +45,18 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# CORS Middleware configuration
+# CORS Middleware configuration - supports both explicit origins and wildcard regex for Vercel deploys
+cors_origins = [o.strip() for o in settings.CORS_ORIGINS] if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
+allow_origin_regex = None
+
+if "*" in cors_origins:
+    cors_origins = []
+    allow_origin_regex = r"^https?:\/\/.*"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=cors_origins,
+    allow_origin_regex=allow_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
