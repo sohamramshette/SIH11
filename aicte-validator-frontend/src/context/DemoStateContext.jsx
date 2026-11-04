@@ -20,7 +20,23 @@ import {
   demoSeniorOfficerProfile,
 } from '../data/seniorOfficerDashboardData';
 
-export const SESSION_STORAGE_KEY = 'aicte_sih_demo_shared_state_v1';
+export const SESSION_STORAGE_KEY = 'aicte_sih_demo_shared_state_v5_malwa_indore';
+
+/**
+ * Ensures Malwa Institute of Technology (APP-2026-8819) is always placed
+ * at index 0 of the applications array so scrutiny officers immediately see
+ * the flagged Fire Safety Certificate with red tamper markings.
+ */
+export function ensureMalwaFirst(apps) {
+  if (!Array.isArray(apps)) return apps;
+  const malwa =
+    apps.find((a) => a.id === 'APP-2026-8819') ||
+    assignedApplicationsData.find((a) => a.id === 'APP-2026-8819') ||
+    demoApplications.find((a) => a.id === 'APP-2026-8819');
+  if (!malwa) return apps;
+  const filtered = apps.filter((a) => a.id !== 'APP-2026-8819');
+  return [malwa, ...filtered];
+}
 
 /**
  * Builds normalized master application dataset by merging and reconciling
@@ -80,7 +96,7 @@ function buildInitialMasterApplications() {
   seniorApplicationsData.forEach(upsert);
   collegeApplications.forEach(upsert);
 
-  return Array.from(map.values());
+  return ensureMalwaFirst(Array.from(map.values()));
 }
 
 /**
@@ -106,10 +122,22 @@ export const DemoStateProvider = ({ children }) => {
     try {
       if (typeof window !== 'undefined' && window.sessionStorage) {
         const saved = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return {
+            ...parsed,
+            applications: ensureMalwaFirst(parsed.applications || []),
+          };
+        }
       } else if (typeof sessionStorage !== 'undefined') {
         const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return {
+            ...parsed,
+            applications: ensureMalwaFirst(parsed.applications || []),
+          };
+        }
       }
     } catch {
       // sessionStorage unavailable or parse error; fallback to defaults
@@ -125,6 +153,19 @@ export const DemoStateProvider = ({ children }) => {
       currentUser: null,
     };
   });
+
+  // Re-verify that Malwa Institute is index 0 whenever component mounts
+  useEffect(() => {
+    setState((prev) => {
+      if (!prev?.applications || prev.applications[0]?.id === 'APP-2026-8819') {
+        return prev;
+      }
+      return {
+        ...prev,
+        applications: ensureMalwaFirst(prev.applications),
+      };
+    });
+  }, []);
 
   const stateRef = useRef(state);
 

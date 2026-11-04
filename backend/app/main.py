@@ -13,6 +13,13 @@ async def lifespan(app: FastAPI):
     # Startup tasks
     logger.info(f"Starting {settings.PROJECT_NAME} API [{settings.ENVIRONMENT}]")
     logger.info(f"CORS origins configured: {settings.CORS_ORIGINS}")
+    try:
+        from app.db.session import engine
+        from app.models import Base
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database schema verified and initialized.")
+    except Exception as e:
+        logger.warning(f"Database schema auto-check note: {e}")
     yield
     # Shutdown tasks
     logger.info(f"Shutting down {settings.PROJECT_NAME} API")

@@ -9,6 +9,7 @@ import ClarificationQueryModal from '../../components/dashboard/ClarificationQue
 import EscalationModal from '../../components/dashboard/EscalationModal';
 
 import { useDemoState } from '../../hooks/useDemoState';
+import { ensureMalwaFirst } from '../../context/DemoStateContext';
 
 import {
   verificationSummaryStats,
@@ -51,12 +52,17 @@ const VerificationDashboard = () => {
     logoutDemoUser,
   } = useDemoState();
 
+  // Guarantee Malwa Institute of Technology (APP-2026-8819) is always placed first
+  const displayApplications = useMemo(() => {
+    return ensureMalwaFirst(applications || []);
+  }, [applications]);
+
   // Navigation state
   const [activeTab, setActiveTab] = useState('overview');
 
   // Selected application in review
   const [selectedApp, setSelectedApp] = useState(null);
-  const activeSelectedApp = selectedApp || applications[0] || null;
+  const activeSelectedApp = selectedApp || displayApplications[0] || null;
 
   // Modals state
   const [queryModalOpen, setQueryModalOpen] = useState(false);
@@ -147,7 +153,7 @@ const VerificationDashboard = () => {
 
   // Filtered applications for Assigned Applications table
   const filteredApplications = useMemo(() => {
-    return (applications || []).filter((app) => {
+    return (displayApplications || []).filter((app) => {
       const query = (searchTerm || headerSearch).toLowerCase().trim();
       const id = (app.id || '').toLowerCase();
       const college = (app.collegeName || app.institutionName || '').toLowerCase();
@@ -171,7 +177,7 @@ const VerificationDashboard = () => {
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
-  }, [applications, searchTerm, headerSearch, statusFilter, priorityFilter]);
+  }, [displayApplications, searchTerm, headerSearch, statusFilter, priorityFilter]);
 
   const totalPages = Math.ceil(filteredApplications.length / itemsPerPage) || 1;
   const paginatedApplications = useMemo(() => {
@@ -256,7 +262,7 @@ const VerificationDashboard = () => {
                       onClick={() => setActiveTab('assigned')}
                       className="inline-flex items-center space-x-1 text-xs font-bold text-blue-700 hover:text-blue-900 hover:underline"
                     >
-                      <span>View All ({applications.length})</span>
+                      <span>View All ({displayApplications.length})</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -275,7 +281,7 @@ const VerificationDashboard = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {applications.slice(0, 4).map((app) => (
+                        {displayApplications.slice(0, 4).map((app) => (
                           <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
                             <td className="px-4 py-3 font-mono font-bold text-blue-900">
                               {app.id}
@@ -567,7 +573,7 @@ const VerificationDashboard = () => {
             <div className="animate-fadeIn">
               <DocumentReviewWorkspace
                 key={activeSelectedApp?.id}
-                applications={applications}
+                applications={displayApplications}
                 selectedApp={activeSelectedApp}
                 onSelectApp={setSelectedApp}
                 onSaveNotes={handleSaveNotes}

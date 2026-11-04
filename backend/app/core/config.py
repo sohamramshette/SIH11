@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # Server
-    HOST: str = "127.0.0.1"
+    HOST: str = "0.0.0.0"
     PORT: int = 8000
     CORS_ORIGINS: Union[str, List[str]] = "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://localhost:3000"
 
@@ -45,6 +45,13 @@ class Settings(BaseSettings):
         if self.SUPABASE_SECRET_KEY and (not self.SUPABASE_SERVICE_ROLE_KEY or self.SUPABASE_SERVICE_ROLE_KEY == "your-supabase-service-role-key"):
             self.SUPABASE_SERVICE_ROLE_KEY = self.SUPABASE_SECRET_KEY
         return self
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def assemble_database_url(cls, v: str) -> str:
+        if isinstance(v, str) and v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://", 1)
+        return v
 
     @field_validator("CORS_ORIGINS", mode="after")
     @classmethod
